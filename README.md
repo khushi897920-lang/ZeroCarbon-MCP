@@ -2,7 +2,7 @@
 
 ZeroCarbon MCP is an enterprise-grade landing page for the first AI-native carbon ledger operating system powered by the **Model Context Protocol (MCP)**. It connects AI agents (Claude, Cursor, Windsurf, Gemini) directly to your carbon ledger for real-time emission calculations and continuous regulatory compliance.
 
-Live URL: [https://zc-i6bmpsocr-khushi897920-langs-projects.vercel.app](https://zc-i6bmpsocr-khushi897920-langs-projects.vercel.app)
+Live URL: [https://zc-mcp.vercel.app](https://zc-mcp.vercel.app)
 
 ---
 
