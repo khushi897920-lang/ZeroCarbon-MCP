@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
@@ -8,403 +8,294 @@ import { useLenis } from "lenis/react";
 import AnimatedButton from "../components/ui/animated-button";
 import NotchNavbar from "../components/ui/notch-navbar";
 import FaqAccordion from "../components/ui/faq-accordion";
+import McpFlow from "../components/ui/mcp-flow";
 
-// Register GSAP plugins
+// Register GSAP plugins once at module level
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger, useGSAP);
 }
 
 export default function Home() {
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [activePanelTab, setActivePanelTab] = useState<"signals" | "actions" | "compliance">("signals");
-  const [panelInput, setPanelInput] = useState("");
-  const [panelMessages, setPanelMessages] = useState([
-    { id: 1, role: "assistant", text: "I detected a carbon spike in your last deployment window." },
-    { id: 2, role: "assistant", text: "Want me to draft a mitigation note for operations?" },
-  ]);
   const containerRef = useRef<HTMLDivElement>(null);
-  const lssPanelRef = useRef<HTMLDivElement>(null);
-  
+
+  // Get lenis instance for programmatic scrollTo calls
   const lenis = useLenis();
 
-  // Sync GSAP ScrollTrigger with Lenis
-  useEffect(() => {
-    if (!lenis) return;
-
-    lenis.on("scroll", ScrollTrigger.update);
-
-    gsap.ticker.add((time) => {
-      lenis.raf(time * 1000);
-    });
-    gsap.ticker.lagSmoothing(0);
-
-    return () => {
-      gsap.ticker.remove((time) => lenis.raf(time * 1000));
-      lenis.off("scroll", ScrollTrigger.update);
-    };
-  }, [lenis]);
-
-  // Navbar Scroll Logic
-  useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > 20) {
-        setIsScrolled(true);
-      } else {
-        setIsScrolled(false);
-      }
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, []);
+  // Note: Lenis <-> GSAP sync is handled globally in ScrollProvider (single RAF loop)
 
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement>, targetId: string) => {
     e.preventDefault();
     if (lenis) {
       lenis.scrollTo(targetId, {
         offset: -80,
-        duration: 1.5,
-        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+        duration: 1.4,
+        // Expo easing — fast start, silky landing, matching Lenis's own curve
+        easing: (t: number) => (t === 1 ? 1 : 1 - Math.pow(2, -10 * t)),
       });
     }
   };
 
-  const handlePanelSend = () => {
-    const value = panelInput.trim();
-    if (!value) return;
 
-    const replyText = activePanelTab === "actions"
-      ? `Routing “${value}” into your automation layer.`
-      : activePanelTab === "compliance"
-        ? `Compiling compliance context for “${value}”.`
-        : `I’ve logged “${value}” and linked it to the latest signal.`;
-
-    setPanelMessages((prev) => [
-      ...prev,
-      { id: Date.now(), role: "user", text: value },
-      { id: Date.now() + 1, role: "assistant", text: replyText },
-    ]);
-    setPanelInput("");
-  };
-
-  const handleLssWheel = (event: React.WheelEvent<HTMLDivElement>) => {
-    const panel = lssPanelRef.current;
-    if (!panel) return;
-
-    const atTop = panel.scrollTop <= 0;
-    const atBottom = panel.scrollTop + panel.clientHeight >= panel.scrollHeight;
-
-    if ((event.deltaY > 0 && !atBottom) || (event.deltaY < 0 && !atTop)) {
-      event.preventDefault();
-      event.stopPropagation();
-      panel.scrollTop += event.deltaY;
-    }
-  };
 
   useGSAP(() => {
     if (typeof window === "undefined") return;
 
+    // Respect user's reduced-motion OS preference — skip all JS animations
     const prefersReducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
-
-    // If user prefers reduced motion, avoid scroll animations and just let CSS/initial layout handle the page.
     if (prefersReducedMotion) return;
 
-    // 1. Hero animations on load
-    gsap.fromTo(
+    // ─── Shared defaults ────────────────────────────────────────────────────
+    // force3D: true ensures GSAP always uses 3D transforms (translateZ(0)),
+    // which forces the browser to paint these elements on the GPU compositor
+    // layer — preventing jank caused by main-thread repaints during scroll.
+    const defaults = {
+      force3D: true,
+      // clearProps: "transform,opacity" — after animation completes, remove
+      // will-change and transform from the inline style so the GPU layer is
+      // released. Using "all" would strip useful inherited CSS too.
+      clearProps: "transform,opacity",
+    };
 
+    // ─── 1. Hero entrance — fires immediately on mount ───────────────────────
+    // autoAlpha: smoother than opacity alone — also sets visibility:hidden
+    // so off-screen elements don't receive pointer events before animating in.
+    gsap.fromTo(
       ".hero-animate",
-      { opacity: 0, y: 50 },
+      { autoAlpha: 0, y: 48, force3D: true },
       {
-        opacity: 1,
+        autoAlpha: 1,
         y: 0,
-        duration: 1,
-        stagger: 0.15,
-        ease: "power3.out",
-        clearProps: "all",
+        duration: 1.1,
+        stagger: 0.13,
+        ease: "expo.out",    // exponential: blazing fast start, incredibly soft landing
+        clearProps: "transform,opacity,visibility",
+        force3D: true,
       }
     );
 
-    // 2. Title reveals using clip-path mask
-const titles = gsap.utils.toArray<HTMLElement>(".gsap-title");
+    // ─── 2. Section title clip-path reveals ────────────────────────────────
+    const titles = gsap.utils.toArray<HTMLElement>(".gsap-title");
     titles.forEach((title) => {
       gsap.fromTo(
-
         title,
-        { clipPath: "inset(0 100% 0 0)", opacity: 0, y: 20 },
+        { clipPath: "inset(0 100% 0 0)", autoAlpha: 0, y: 16, force3D: true },
         {
           clipPath: "inset(0 0% 0 0)",
-          opacity: 1,
+          autoAlpha: 1,
           y: 0,
-          duration: 1.2,
-          ease: "power3.out",
+          duration: 1.15,
+          ease: "expo.out",
+          force3D: true,
+          clearProps: "transform,opacity,visibility,clip-path",
           scrollTrigger: {
             trigger: title,
-            start: "top 80%",
+            start: "top 82%",
             once: true,
-            toggleActions: "play none none reverse",
           },
         }
       );
     });
 
-    // 3. Feature Cards Stagger Slide-Up
+    // ─── 3. Feature cards stagger ───────────────────────────────────────────
     gsap.fromTo(
       ".feature-card",
-      { opacity: 0, y: 60 },
+      { autoAlpha: 0, y: 52, force3D: true },
       {
-        opacity: 1,
+        ...defaults,
+        autoAlpha: 1,
         y: 0,
-        duration: 0.8,
-        stagger: 0.15,
-        ease: "power2.out",
+        duration: 0.85,
+        stagger: { each: 0.13, ease: "power1.inOut" },
+        ease: "power3.out",
         scrollTrigger: {
           trigger: "#features",
-          start: "top 80%",
+          start: "top 82%",
           once: true,
-          toggleActions: "play none none reverse",
         },
       }
     );
 
-    // 4. Pricing Cards Stagger Slide-Up
+    // ─── 4. Pricing cards stagger ───────────────────────────────────────────
     gsap.fromTo(
       ".pricing-card",
-      { opacity: 0, y: 60 },
+      { autoAlpha: 0, y: 52, force3D: true },
       {
-        opacity: 1,
+        ...defaults,
+        autoAlpha: 1,
         y: 0,
-        duration: 0.8,
-        stagger: 0.15,
-        ease: "power2.out",
+        duration: 0.85,
+        stagger: { each: 0.13, ease: "power1.inOut" },
+        ease: "power3.out",
         scrollTrigger: {
           trigger: "#pricing",
-          start: "top 80%",
+          start: "top 82%",
           once: true,
-          toggleActions: "play none none reverse",
         },
       }
     );
 
-    // 5. How It Works steps stagger
-    gsap.fromTo(
-      ".how-item",
-      { opacity: 0, y: 50 },
-      {
-        opacity: 1,
-        y: 0,
-        duration: 0.8,
-        stagger: 0.15,
-        ease: "power2.out",
-        scrollTrigger: {
-          trigger: "#how-it-works",
-          start: "top 80%",
-          once: true,
-          toggleActions: "play none none reverse",
-        },
-      }
-    );
-
-    // 6. Count-up stats (ecosystem section) - tasteful and low-cost
+    // ─── 5. Count-up stats ──────────────────────────────────────────────────
     const stats = gsap.utils.toArray<HTMLElement>("[data-count]");
-    if (stats.length > 0) {
-      stats.forEach((el) => {
-        const target = Number(el.getAttribute("data-count") ?? "0");
-        const suffix = el.getAttribute("data-count-suffix") ?? "";
-        const prefix = el.getAttribute("data-count-prefix") ?? "";
-        const divider = el.getAttribute("data-count-divider") ?? "";
+    stats.forEach((el) => {
+      const target = Number(el.getAttribute("data-count") ?? "0");
+      const suffix = el.getAttribute("data-count-suffix") ?? "";
+      const prefix = el.getAttribute("data-count-prefix") ?? "";
+      const divider = el.getAttribute("data-count-divider") ?? "";
+      const counter = { val: 0 };
 
-        gsap.fromTo(
-          el,
-          {
-            // start at 0 but keep formatting consistent
-            innerText: "0",
-          },
-          {
-            innerText: String(target),
-            duration: 1,
-            ease: "power2.out",
-            snap: { innerText: 1 },
-            stagger: 0,
-            scrollTrigger: {
-              trigger: "#architecture",
-              start: "top 80%",
-              once: true,
-            },
-            onUpdate: () => {
-              const current = Number(el.innerText.replace(/[^0-9.]/g, "")) || 0;
-              if (divider) {
-                el.innerText = `${current}${divider}${suffix}`;
-              } else {
-                el.innerText = `${prefix}${current}${suffix}`;
-              }
-            },
-          }
-        );
-      });
-    }
-
-
-    // 7. Additional scroll reveals (architecture, developers, final CTA)
-    gsap.fromTo(
-      "#architecture .stagger-item",
-      { opacity: 0, y: 40 },
-      {
-        opacity: 1,
-        y: 0,
-        duration: 0.9,
+      gsap.to(counter, {
+        val: target,
+        duration: 1.4,
         ease: "power2.out",
         scrollTrigger: {
           trigger: "#architecture",
           start: "top 80%",
           once: true,
-          toggleActions: "play none none reverse",
         },
-      }
-    );
+        onUpdate: () => {
+          const current = Math.round(counter.val);
+          el.textContent = divider
+            ? `${current}${divider}${suffix}`
+            : `${prefix}${current}${suffix}`;
+        },
+      });
+    });
 
+    // ─── 6. Architecture stagger items ──────────────────────────────────────
     gsap.fromTo(
-      "#developers > div > div",
-      { opacity: 0, y: 30 },
+      "#architecture .stagger-item",
+      { autoAlpha: 0, y: 36, force3D: true },
       {
-        opacity: 1,
+        ...defaults,
+        autoAlpha: 1,
         y: 0,
         duration: 0.9,
-        ease: "power2.out",
-        stagger: 0.08,
+        ease: "power3.out",
         scrollTrigger: {
-          trigger: "#developers",
+          trigger: "#architecture",
           start: "top 80%",
           once: true,
-          toggleActions: "play none none reverse",
         },
       }
     );
 
+    // ─── 7. Developer section ───────────────────────────────────────────────
     gsap.fromTo(
-      ".floating-chip",
-      { opacity: 0, y: 20 },
+      "#developers > div > div",
+      { autoAlpha: 0, y: 28, force3D: true },
       {
-        opacity: 1,
+        ...defaults,
+        autoAlpha: 1,
         y: 0,
-        duration: 0.8,
-        ease: "power2.out",
-        stagger: 0.12,
-        delay: 0.2,
+        duration: 0.85,
+        ease: "power3.out",
+        stagger: { each: 0.09, ease: "power1.inOut" },
+        scrollTrigger: {
+          trigger: "#developers",
+          start: "top 82%",
+          once: true,
+        },
       }
     );
 
+    // ─── 8. Brand boxes (social proof) ──────────────────────────────────────
+    gsap.fromTo(
+      ".brand-box",
+      { autoAlpha: 0, y: 28, scale: 0.96, force3D: true },
+      {
+        ...defaults,
+        autoAlpha: 1,
+        y: 0,
+        scale: 1,
+        duration: 0.75,
+        ease: "expo.out",
+        stagger: { each: 0.08, ease: "power1.inOut" },
+        scrollTrigger: {
+          trigger: "#social-proof",
+          start: "top 82%",
+          once: true,
+        },
+      }
+    );
+
+    // ─── 9. Glass cards ────────────────────────────────────────────────────
     const glassCards = gsap.utils.toArray<HTMLElement>(".glass-card");
     glassCards.forEach((card) => {
       gsap.fromTo(
         card,
-        { opacity: 0, y: 40 },
+        { autoAlpha: 0, y: 36, force3D: true },
         {
-          opacity: 1,
+          ...defaults,
+          autoAlpha: 1,
           y: 0,
-          duration: 0.9,
-          ease: "power2.out",
+          duration: 0.85,
+          ease: "power3.out",
           scrollTrigger: {
             trigger: card,
-            start: "top 85%",
+            start: "top 86%",
             once: true,
           },
         }
       );
     });
 
-    gsap.fromTo(
-      ".hero-panel, .brand-box, .engine-card, .timeline-card",
-      { opacity: 0, y: 50 },
-      {
-        opacity: 1,
-        y: 0,
-        duration: 0.9,
-        ease: "power2.out",
-        stagger: 0.12,
-        scrollTrigger: {
-          trigger: "#hero",
-          start: "top 85%",
-          once: true,
-          toggleActions: "play none none reverse",
-        },
-      }
-    );
-
-    gsap.fromTo(
-      ".brand-box",
-      { opacity: 0, y: 30, scale: 0.96 },
-      {
-        opacity: 1,
-        y: 0,
-        scale: 1,
-        duration: 0.75,
-        ease: "power3.out",
-        stagger: 0.08,
-        scrollTrigger: {
-          trigger: "#social-proof",
-          start: "top 80%",
-          once: true,
-          toggleActions: "play none none reverse",
-        },
-      }
-    );
-
+    // ─── 10. Engine cards ───────────────────────────────────────────────────
     gsap.fromTo(
       ".engine-card",
-      { opacity: 0, y: 40, scale: 0.97 },
+      { autoAlpha: 0, y: 36, scale: 0.97, force3D: true },
       {
-        opacity: 1,
+        ...defaults,
+        autoAlpha: 1,
         y: 0,
         scale: 1,
         duration: 0.9,
-        ease: "power3.out",
-        stagger: 0.1,
+        ease: "expo.out",
+        stagger: { each: 0.1, ease: "power1.inOut" },
         scrollTrigger: {
           trigger: "#platform-engine",
-          start: "top 80%",
+          start: "top 82%",
           once: true,
-          toggleActions: "play none none reverse",
         },
       }
     );
 
+    // ─── 11. Timeline cards (slide in from left) ────────────────────────────
     gsap.fromTo(
       ".timeline-card",
-      { opacity: 0, x: -40 },
+      { autoAlpha: 0, x: -36, force3D: true },
       {
-        opacity: 1,
+        ...defaults,
+        autoAlpha: 1,
         x: 0,
         duration: 0.85,
-        ease: "power3.out",
-        stagger: 0.12,
+        ease: "expo.out",
+        stagger: { each: 0.12, ease: "power1.inOut" },
         scrollTrigger: {
           trigger: "#how-it-works",
-          start: "top 80%",
+          start: "top 82%",
           once: true,
-          toggleActions: "play none none reverse",
         },
       }
     );
 
+    // ─── 12. Final CTA section ──────────────────────────────────────────────
     gsap.fromTo(
       "#contact",
-      { opacity: 0, y: 40 },
+      { autoAlpha: 0, y: 36, force3D: true },
       {
-        opacity: 1,
+        ...defaults,
+        autoAlpha: 1,
         y: 0,
         duration: 0.9,
-        ease: "power2.out",
+        ease: "power3.out",
         scrollTrigger: {
           trigger: "#contact",
-          start: "top 80%",
+          start: "top 82%",
           once: true,
-          toggleActions: "play none none reverse",
         },
       }
     );
-  }, []);
+  }, { scope: containerRef });
 
 
 
@@ -419,7 +310,7 @@ const titles = gsap.utils.toArray<HTMLElement>(".gsap-title");
           <div className="max-w-container-max mx-auto px-grid-margin relative">
             <div className="absolute top-0 right-0 h-90 w-90 rounded-full bg-accent-green/10 blur-3xl"></div>
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center relative">
-            <div className="lg:col-span-6 space-y-8">
+            <div className="lg:col-span-5 space-y-8">
               <div className="inline-flex items-center gap-3 rounded-full border border-accent-green/20 bg-surface-mint/90 px-4 py-2 text-sm font-semibold text-accent-green shadow-sm hero-animate">
                 <span className="h-2 w-2 rounded-full bg-accent-green animate-pulse"></span>
                 ZeroCarbon MCP launch
@@ -459,185 +350,10 @@ const titles = gsap.utils.toArray<HTMLElement>(".gsap-title");
                 </div>
               </div>
             </div>
-            <div className="lg:col-span-6 relative hero-animate">
-              <div className="hero-panel flow-soft relative overflow-hidden rounded-[48px] border border-outline-variant/20 bg-white/85 p-2 shadow-[0_30px_90px_rgba(3,36,22,0.12)] backdrop-blur-xl">
-                <div className="absolute -left-12 top-6 h-32 w-32 rounded-full bg-accent-green/10 blur-2xl"></div>
-                <div className="absolute right-8 top-12 h-24 w-24 rounded-full border border-accent-green/20"></div>
-                <div className="relative overflow-hidden rounded-[36px] border border-white/10 bg-[#07130d] p-2 shadow-inner min-h-[520px]">
-                  <div className="flex items-center justify-between border-b border-white/10 bg-[#0f1b14] px-3 py-2.5">
-                    <div className="flex items-center gap-2">
-                      <span className="h-2.5 w-2.5 rounded-full bg-red-400"></span>
-                      <span className="h-2.5 w-2.5 rounded-full bg-yellow-400"></span>
-                      <span className="h-2.5 w-2.5 rounded-full bg-green-400"></span>
-                    </div>
-                    <div className="rounded-full border border-white/10 bg-white/10 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-white/70">
-                      LSS • Live
-                    </div>
-                  </div>
-                  <div
-                    ref={lssPanelRef}
-                    onWheel={handleLssWheel}
-                    className="h-[400px] overflow-y-auto overflow-x-hidden overscroll-contain px-3 py-3 pr-2 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-white/15"
-                    data-lenis-prevent="true"
-                  >
-                    <div className="space-y-3">
-                      <div className="flex flex-wrap items-center gap-2 rounded-full border border-white/10 bg-white/10 p-1.5">
-                        {(["signals", "actions", "compliance"] as const).map((tab) => (
-                          <button
-                            key={tab}
-                            type="button"
-                            onClick={() => setActivePanelTab(tab)}
-                            className={`rounded-full px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.2em] transition-all ${activePanelTab === tab ? "bg-accent-green text-white shadow-sm" : "bg-transparent text-white/70 hover:bg-white/10"}`}
-                          >
-                            {tab === "signals" ? "Signals" : tab === "actions" ? "Actions" : "Compliance"}
-                          </button>
-                        ))}
-                      </div>
-
-                      <div className="rounded-[24px] border border-white/10 bg-gradient-to-br from-white/12 to-white/6 p-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.12)]">
-                        <div className="flex items-start justify-between gap-3">
-                          <div>
-                            <p className="text-[10px] uppercase tracking-[0.24em] text-white/60">ZeroCarbon MCP launch</p>
-                            <p className="mt-1 text-lg font-semibold text-white">Operational carbon intelligence, now live</p>
-                            <p className="mt-2 text-sm text-white/70">A launch-ready control plane for agents, telemetry, and compliance workflows.</p>
-                          </div>
-                          <span className="rounded-full bg-accent-green/20 px-3 py-1 text-xs font-semibold text-accent-green">Launching</span>
-                        </div>
-
-                        <div className="mt-4 grid gap-2 sm:grid-cols-3">
-                          <div className="rounded-2xl border border-white/10 bg-[#07130d]/60 p-2.5">
-                            <p className="text-[10px] uppercase tracking-[0.2em] text-white/55">Latency</p>
-                            <p className="mt-1 text-base font-semibold text-white">24 ms</p>
-                          </div>
-                          <div className="rounded-2xl border border-white/10 bg-[#07130d]/60 p-2.5">
-                            <p className="text-[10px] uppercase tracking-[0.2em] text-white/55">Contexts</p>
-                            <p className="mt-1 text-base font-semibold text-white">4.2k</p>
-                          </div>
-                          <div className="rounded-2xl border border-white/10 bg-[#07130d]/60 p-2.5">
-                            <p className="text-[10px] uppercase tracking-[0.2em] text-white/55">Policy sync</p>
-                            <p className="mt-1 text-base font-semibold text-white">92%</p>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="rounded-[24px] border border-white/10 bg-white/10 p-3">
-                        {activePanelTab === "signals" && (
-                          <>
-                            <div className="flex items-center justify-between gap-2">
-                              <div>
-                                <p className="text-[10px] uppercase tracking-[0.24em] text-white/60">Live signal stream</p>
-                                <p className="mt-1 text-lg font-semibold text-white">Carbon forecasts and alerts</p>
-                              </div>
-                              <span className="rounded-full bg-accent-green/20 px-3 py-1 text-xs font-semibold text-accent-green">Connected</span>
-                            </div>
-                            <div className="mt-4 overflow-hidden rounded-[20px] border border-white/10 bg-white/95 shadow-sm">
-                              <div className="hero-chart h-44 px-4 pt-4">
-                                <div className="chart-grid"></div>
-                                <div className="hero-chart-line hero-chart-line-1"></div>
-                                <div className="hero-chart-line hero-chart-line-2"></div>
-                                <div className="hero-chart-point hero-chart-point-1"></div>
-                                <div className="hero-chart-point hero-chart-point-2"></div>
-                                <div className="hero-chart-point hero-chart-point-3"></div>
-                                <div className="hero-chart-marker hero-chart-marker-1">42%</div>
-                                <div className="hero-chart-marker hero-chart-marker-2">68%</div>
-                              </div>
-                            </div>
-                            <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                              <div className="rounded-2xl border border-white/10 bg-white/10 p-3">
-                                <p className="text-xs text-white/70">Data freshness</p>
-                                <p className="mt-2 text-base font-bold text-white"><span className="text-accent-green">5</span> sec</p>
-                              </div>
-                              <div className="rounded-2xl border border-white/10 bg-white/10 p-3">
-                                <p className="text-xs text-white/70">Policy hits</p>
-                                <p className="mt-2 text-base font-bold text-white"><span className="text-accent-green">14</span></p>
-                              </div>
-                            </div>
-                          </>
-                        )}
-
-                        {activePanelTab === "actions" && (
-                          <>
-                            <div className="flex items-center justify-between gap-2">
-                              <div>
-                                <p className="text-[10px] uppercase tracking-[0.24em] text-white/60">Agent actions</p>
-                                <p className="mt-1 text-lg font-semibold text-white">Instant playbooks</p>
-                              </div>
-                              <span className="rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-white/70">Ready</span>
-                            </div>
-                            <div className="mt-4 space-y-2">
-                              <div className="rounded-2xl border border-white/10 bg-white/10 px-3 py-2 text-sm text-white/80">Open mitigation draft for compliance review</div>
-                              <div className="rounded-2xl border border-white/10 bg-white/10 px-3 py-2 text-sm text-white/80">Route the event into Slack and Jira</div>
-                              <div className="rounded-2xl border border-white/10 bg-white/10 px-3 py-2 text-sm text-white/80">Summarize the risk to leadership</div>
-                            </div>
-                          </>
-                        )}
-
-                        {activePanelTab === "compliance" && (
-                          <>
-                            <div className="flex items-center justify-between gap-2">
-                              <div>
-                                <p className="text-[10px] uppercase tracking-[0.24em] text-white/60">Compliance view</p>
-                                <p className="mt-1 text-lg font-semibold text-white">Policy-safe status</p>
-                              </div>
-                              <span className="rounded-full bg-accent-green/20 px-3 py-1 text-xs font-semibold text-accent-green">Audit-ready</span>
-                            </div>
-                            <div className="mt-4 space-y-2">
-                              <div className="rounded-2xl border border-white/10 bg-white/10 px-3 py-2 text-sm text-white/80">CSRD checklist 92% complete</div>
-                              <div className="rounded-2xl border border-white/10 bg-white/10 px-3 py-2 text-sm text-white/80">SEC evidence chain synced</div>
-                              <div className="rounded-2xl border border-white/10 bg-white/10 px-3 py-2 text-sm text-white/80">3 reviewers pending sign-off</div>
-                            </div>
-                          </>
-                        )}
-                      </div>
-
-                      <div className="rounded-[24px] border border-white/10 bg-white/5 p-3 text-white">
-                        <div className="flex items-center justify-between gap-2">
-                          <div>
-                            <p className="text-[10px] uppercase tracking-[0.24em] text-white/60">Assistant</p>
-                            <p className="mt-1 text-sm font-semibold text-white">Try a prompt</p>
-                          </div>
-                          <span className="rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-white/70">Live</span>
-                        </div>
-                        <div className="mt-4 min-h-[220px] space-y-2 overflow-hidden rounded-[20px] border border-white/10 bg-[#07130d] p-3">
-                          {panelMessages.map((message) => (
-                            <div key={message.id} className={`rounded-2xl px-3 py-2 text-sm ${message.role === "user" ? "ml-6 bg-accent-green/20 text-white" : "mr-6 bg-white/10 text-white/80"}`}>
-                              {message.text}
-                            </div>
-                          ))}
-                        </div>
-                        <div className="mt-3 flex gap-2">
-                          <input
-                            value={panelInput}
-                            onChange={(event) => setPanelInput(event.target.value)}
-                            onKeyDown={(event) => event.key === "Enter" && handlePanelSend()}
-                            placeholder="Ask the panel to act..."
-                            className="flex-1 rounded-full border border-white/10 bg-white/10 px-3 py-2 text-sm text-white placeholder:text-white/40 outline-none"
-                          />
-                          <button
-                            type="button"
-                            onClick={handlePanelSend}
-                            className="rounded-full bg-accent-green px-4 py-2 text-sm font-semibold text-white transition hover:bg-accent-green/90"
-                          >
-                            Send
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className="absolute -bottom-6 left-6 grid gap-3 sm:grid-cols-3">
-                  <div className="hero-chip float-animation rounded-[20px] border border-outline-variant/20 bg-white/90 px-4 py-3 text-sm font-semibold text-primary shadow-sm" style={{ animationDelay: "0s" }}>
-                    Secure discovery
-                  </div>
-                  <div className="hero-chip float-animation rounded-[20px] border border-outline-variant/20 bg-white/90 px-4 py-3 text-sm font-semibold text-primary shadow-sm" style={{ animationDelay: "0.2s" }}>
-                    Compliance-ready
-                  </div>
-                  <div className="hero-chip float-animation rounded-[20px] border border-outline-variant/20 bg-white/90 px-4 py-3 text-sm font-semibold text-primary shadow-sm" style={{ animationDelay: "0.4s" }}>
-                    Agent-native
-                  </div>
-                </div>
-              </div>
+            <div className="lg:col-span-7 relative hero-animate">
+              <McpFlow />
             </div>
+
           </div>
           </div>
         </section>
