@@ -5,10 +5,21 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import { useLenis } from "lenis/react";
+import Image from "next/image";
+import dynamic from "next/dynamic";
 import AnimatedButton from "../components/ui/animated-button";
 import NotchNavbar from "../components/ui/notch-navbar";
-import FaqAccordion from "../components/ui/faq-accordion";
-import McpFlow from "../components/ui/mcp-flow";
+import { LogoCloud } from "../components/ui/logo-cloud";
+import { StackedSteps } from "../components/ui/stacked-steps";
+
+const McpFlow = dynamic(() => import("../components/ui/mcp-flow"), {
+  ssr: false,
+  loading: () => <div className="w-full aspect-[4/3] bg-surface-mint/30 animate-pulse rounded-[40px] flex items-center justify-center text-text-muted">Loading visualization...</div>
+});
+
+const FaqAccordion = dynamic(() => import("../components/ui/faq-accordion"), {
+  ssr: true,
+});
 
 // Register GSAP plugins once at module level
 if (typeof window !== "undefined") {
@@ -198,6 +209,62 @@ export default function Home() {
       }
     );
 
+    // ─── 7b. Code lines typewriter reveal ────────────────────────────────────
+    gsap.fromTo(
+      ".code-line",
+      { autoAlpha: 0, x: -12, force3D: true },
+      {
+        autoAlpha: 1,
+        x: 0,
+        duration: 0.5,
+        stagger: 0.08,
+        ease: "power2.out",
+        scrollTrigger: {
+          trigger: "#developers",
+          start: "top 78%",
+          once: true,
+        },
+      }
+    );
+
+    // ─── 7c. Sandbox 3D mouse tilt ──────────────────────────────────────────
+    const codePanel = document.querySelector(".code-panel") as HTMLElement | null;
+    if (codePanel) {
+      const handleMouseMove = (e: MouseEvent) => {
+        const rect = codePanel.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        const xc = rect.width / 2;
+        const yc = rect.height / 2;
+        const dx = x - xc;
+        const dy = y - yc;
+        
+        gsap.to(codePanel, {
+          rotateY: (dx / xc) * 8, // max 8 deg tilt
+          rotateX: -(dy / yc) * 8,
+          x: (dx / xc) * 4,
+          y: (dy / yc) * 4,
+          duration: 0.35,
+          ease: "power2.out",
+          transformPerspective: 1200,
+        });
+      };
+
+      const handleMouseLeave = () => {
+        gsap.to(codePanel, {
+          rotateY: 0,
+          rotateX: 0,
+          x: 0,
+          y: 0,
+          duration: 0.6,
+          ease: "power2.out",
+        });
+      };
+
+      codePanel.addEventListener("mousemove", handleMouseMove);
+      codePanel.addEventListener("mouseleave", handleMouseLeave);
+    }
+
     // ─── 8. Brand boxes (social proof) ──────────────────────────────────────
     gsap.fromTo(
       ".brand-box",
@@ -259,24 +326,6 @@ export default function Home() {
       }
     );
 
-    // ─── 11. Timeline cards (slide in from left) ────────────────────────────
-    gsap.fromTo(
-      ".timeline-card",
-      { autoAlpha: 0, x: -36, force3D: true },
-      {
-        ...defaults,
-        autoAlpha: 1,
-        x: 0,
-        duration: 0.85,
-        ease: "expo.out",
-        stagger: { each: 0.12, ease: "power1.inOut" },
-        scrollTrigger: {
-          trigger: "#how-it-works",
-          start: "top 82%",
-          once: true,
-        },
-      }
-    );
 
     // ─── 12. Final CTA section ──────────────────────────────────────────────
     gsap.fromTo(
@@ -357,6 +406,9 @@ export default function Home() {
           </div>
           </div>
         </section>
+
+        {/* Logo Marquee — trust strip between Hero and Social Proof */}
+        <LogoCloud />
 
         {/* Social Proof */}
         <section id="social-proof" className="py-10">
@@ -638,73 +690,44 @@ export default function Home() {
 
               </div>
             </div>
-            <div className="relative group stagger-item" style={{ transitionDelay: '200ms' }}>
-              <div className="flow-soft rounded-[40px] overflow-hidden shadow-2xl relative">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img alt="Neural sustainability network illustration" className="w-full aspect-4/3 object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD1BQbrQ_6WpbvTn8YQhoiVdUi2QG8rygmz4M0bW1u8XWMSO-YZ9dWKVuQXyiqyYFFIghtSp8kTJg0LwmnWByZHybykPxIdjtMwF32RjrGvsR3mQf0jz5smppkFLfRQJFPvXRE7ggzaLZc2NflI35fjKB-trzRZmRDlnL24xHF18rWonjX-EDeCk_bRazd82syRs8qbYe7nE9skJ6FlNu7wEz5f8qlHvJEWiMTBABcXZYfvD-NBsoWi_hGyr_QFGhAO" />
+            <div className="relative group stagger-item w-full aspect-4/3" style={{ transitionDelay: '200ms' }}>
+              <div className="flow-soft rounded-[40px] overflow-hidden shadow-2xl relative w-full h-full">
+                <Image 
+                  alt="Neural sustainability network illustration" 
+                  className="object-cover" 
+                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuD1BQbrQ_6WpbvTn8YQhoiVdUi2QG8rygmz4M0bW1u8XWMSO-YZ9dWKVuQXyiqyYFFIghtSp8kTJg0LwmnWByZHybykPxIdjtMwF32RjrGvsR3mQf0jz5smppkFLfRQJFPvXRE7ggzaLZc2NflI35fjKB-trzRZmRDlnL24xHF18rWonjX-EDeCk_bRazd82syRs8qbYe7nE9skJ6FlNu7wEz5f8qlHvJEWiMTBABcXZYfvD-NBsoWi_hGyr_QFGhAO" 
+                  fill
+                  sizes="(max-width: 1024px) 100vw, 50vw"
+                  priority={false}
+                />
                 <div className="absolute inset-0 bg-linear-to-tr from-primary/40 to-transparent"></div>
               </div>
             </div>
           </div>
         </section>
 
-        {/* How It Works */}
-        <section id="how-it-works" className="px-grid-margin py-12 md:py-16 max-w-container-max mx-auto">
-          <div className="text-center space-y-4 mb-12">
-            <p className="font-label-caps text-label-caps text-accent-green uppercase">The Path To Zero</p>
-            <h2 className="gsap-title font-headline-xl text-headline-xl">Simplicity in every step</h2>
-          </div>
-          <div className="relative grid gap-8 lg:grid-cols-[0.85fr_1.15fr]">
-            <div className="hidden lg:block">
-              <div className="timeline-line absolute left-16 top-0 h-full w-px bg-accent-green/10"></div>
-              <div className="timeline-node top-[8%]">1</div>
-              <div className="timeline-node top-[32%]">2</div>
-              <div className="timeline-node top-[56%]">3</div>
-              <div className="timeline-node top-[80%]">4</div>
-            </div>
-            <div className="space-y-8">
-              <div className="timeline-card float-animation p-8 rounded-[32px] border border-outline-variant/10 bg-white shadow-sm" style={{ animationDelay: "0s" }}>
-                <span className="timeline-badge">01</span>
-                <h4 className="font-headline-lg text-[22px] mt-4">Install &amp; Connect</h4>
-                <p className="mt-3 font-body-md text-text-muted">Deploy our lightweight agent across your cloud stack in minutes.</p>
-              </div>
-              <div className="timeline-card float-animation p-8 rounded-[32px] border border-outline-variant/10 bg-white shadow-sm" style={{ animationDelay: "0.2s" }}>
-                <span className="timeline-badge">02</span>
-                <h4 className="font-headline-lg text-[22px] mt-4">Discover Tools</h4>
-                <p className="mt-3 font-body-md text-text-muted">AI automatically maps every software tool to its energy footprint.</p>
-              </div>
-              <div className="timeline-card float-animation p-8 rounded-[32px] border border-outline-variant/10 bg-white shadow-sm" style={{ animationDelay: "0.4s" }}>
-                <span className="timeline-badge">03</span>
-                <h4 className="font-headline-lg text-[22px] mt-4">Calculate Emissions</h4>
-                <p className="mt-3 font-body-md text-text-muted">Compute real-time Scope 1, 2, and 3 data with certified accuracy.</p>
-              </div>
-              <div className="timeline-card float-animation p-8 rounded-[32px] border border-outline-variant/10 bg-white shadow-sm" style={{ animationDelay: "0.6s" }}>
-                <span className="timeline-badge">04</span>
-                <h4 className="font-headline-lg text-[22px] mt-4">Store in Ledger</h4>
-                <p className="mt-3 font-body-md text-text-muted">Immutable audit logs saved to our carbon ledger for reporting.</p>
-              </div>
-            </div>
-          </div>
-        </section>
-
+        <StackedSteps />
         {/* Code Section */}
         <section id="developers" className="px-grid-margin py-12 md:py-16 max-w-container-max mx-auto">
           <div className="bg-surface-container-low rounded-[48px] p-8 md:p-16 border border-outline-variant/10 grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
-            <div className="order-2 lg:order-1">
-              <div className="code-panel bg-[#0b1410] rounded-2xl p-6 font-mono text-[14px] text-on-primary shadow-2xl overflow-hidden relative">
+            <div className="order-2 lg:order-1 relative group">
+              {/* Ambient Glow Blob */}
+              <div className="absolute -inset-3 bg-gradient-to-r from-accent-green/20 to-teal-500/20 rounded-3xl blur-2xl opacity-75 group-hover:opacity-100 transition duration-700 pointer-events-none"></div>
+              
+              <div className="code-panel bg-[#0b1410] rounded-2xl p-6 font-mono text-[14px] text-on-primary shadow-2xl overflow-hidden relative border border-white/5 select-none transform-gpu">
                 <div className="flex gap-1.5 mb-6">
                   <div className="w-3 h-3 rounded-full bg-red-400"></div>
                   <div className="w-3 h-3 rounded-full bg-yellow-400"></div>
                   <div className="w-3 h-3 rounded-full bg-green-400"></div>
                 </div>
-                <p className="text-white/40 mb-4">// Initializing ZeroCarbon MCP</p>
-                <p className="mb-1 text-blue-300">const <span className="text-white">zeroCarbon</span> = new <span className="text-teal-300">MCPCore</span>({'{'}</p>
-                <p className="pl-4">auditMode: <span className="text-amber-200">&apos;real-time&apos;</span>,</p>
-                <p className="pl-4 text-white">compliance: [<span className="text-amber-200">&apos;CSRD&apos;</span>, <span className="text-amber-200">&apos;SEC&apos;</span>],</p>
-                <p className="pl-4 text-white">scopeTracking: <span className="text-amber-200">&apos;3_FULL&apos;</span></p>
-                <p className="text-blue-300">{'}'});</p>
-                <p className="mt-4 text-blue-300">await <span className="text-white">zeroCarbon</span>.connect(<span className="text-amber-200">&apos;infrastructure&apos;</span>);</p>
-                <p className="text-teal-400 mt-2">✓ Ledger ready. Monitoring 4,129 endpoints.</p>
+                <p className="code-line text-white/40 mb-4">// Initializing ZeroCarbon MCP</p>
+                <p className="code-line mb-1 text-blue-300">const <span className="text-white">zeroCarbon</span> = new <span className="text-teal-300">MCPCore</span>({'{'}</p>
+                <p className="code-line pl-4">auditMode: <span className="text-amber-200">&apos;real-time&apos;</span>,</p>
+                <p className="code-line pl-4 text-white">compliance: [<span className="text-amber-200">&apos;CSRD&apos;</span>, <span className="text-amber-200">&apos;SEC&apos;</span>],</p>
+                <p className="code-line pl-4 text-white">scopeTracking: <span className="text-amber-200">&apos;3_FULL&apos;</span></p>
+                <p className="code-line text-blue-300">{'}'});</p>
+                <p className="code-line mt-4 text-blue-300">await <span className="text-white">zeroCarbon</span>.connect(<span className="text-amber-200">&apos;infrastructure&apos;</span>);</p>
+                <p className="code-line text-teal-400 mt-2">✓ Ledger ready. Monitoring 4,129 endpoints.</p>
               </div>
             </div>
             <div className="order-1 lg:order-2 space-y-8">
@@ -883,11 +906,55 @@ export default function Home() {
         <div className="max-w-container-max mx-auto mt-20 pt-10 border-t border-outline-variant/30 flex justify-between items-center text-body-md text-text-muted">
           <p>© 2024 ZeroCarbon MCP. All rights reserved.</p>
           <div className="flex gap-6">
-            <span className="material-symbols-outlined cursor-pointer hover:text-primary transition-colors">public</span>
-            <span className="material-symbols-outlined cursor-pointer hover:text-primary transition-colors">terminal</span>
+            <a href="#" aria-label="ZeroCarbon MCP Public Portal" className="hover:text-primary transition-colors">
+              <span className="material-symbols-outlined" aria-hidden="true">public</span>
+            </a>
+            <a href="#" aria-label="ZeroCarbon MCP Terminal Console" className="hover:text-primary transition-colors">
+              <span className="material-symbols-outlined" aria-hidden="true">terminal</span>
+            </a>
           </div>
         </div>
       </footer>
+      {/* Enterprise-grade JSON-LD Structured Data for SEO */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@graph": [
+              {
+                "@type": "Organization",
+                "@id": "https://zerocarbon-mcp.vercel.app/#organization",
+                "name": "ZeroCarbon MCP",
+                "url": "https://zerocarbon-mcp.vercel.app",
+                "logo": "https://zerocarbon-mcp.vercel.app/logo.png"
+              },
+              {
+                "@type": "WebSite",
+                "@id": "https://zerocarbon-mcp.vercel.app/#website",
+                "url": "https://zerocarbon-mcp.vercel.app",
+                "name": "ZeroCarbon MCP",
+                "publisher": {
+                  "@id": "https://zerocarbon-mcp.vercel.app/#organization"
+                }
+              },
+              {
+                "@type": "SoftwareApplication",
+                "@id": "https://zerocarbon-mcp.vercel.app/#software",
+                "name": "ZeroCarbon MCP",
+                "operatingSystem": "All",
+                "applicationCategory": "BusinessApplication",
+                "description": "Enterprise Carbon Operating System powered by Model Context Protocol (MCP). Consolidate telemetry and compliance workflows.",
+                "offers": {
+                  "@type": "Offer",
+                  "price": "0",
+                  "priceCurrency": "USD"
+                }
+              }
+            ]
+          })
+        }}
+      />
     </div>
   );
 }

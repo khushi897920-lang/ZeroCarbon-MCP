@@ -60,14 +60,17 @@
   --spacing-base: 8px;
   --spacing-container-max: 1440px;
 
-  --font-headline-lg-mobile: "Newsreader", serif;
-  --font-label-caps: "Hanken Grotesk", sans-serif;
-  --font-body-md: "Hanken Grotesk", sans-serif;
-  --font-headline-xl: "Newsreader", serif;
-  --font-headline-lg: "Newsreader", serif;
-  --font-body-xl: "Hanken Grotesk", sans-serif;
-  --font-stat-display: "Hanken Grotesk", sans-serif;
-  --font-display-lg: "Newsreader", serif;
+  --font-newsreader: var(--font-newsreader);
+  --font-hanken-grotesk: var(--font-hanken-grotesk);
+
+  --font-headline-lg-mobile: var(--font-newsreader), serif;
+  --font-label-caps: var(--font-hanken-grotesk), sans-serif;
+  --font-body-md: var(--font-hanken-grotesk), sans-serif;
+  --font-headline-xl: var(--font-newsreader), serif;
+  --font-headline-lg: var(--font-newsreader), serif;
+  --font-body-xl: var(--font-hanken-grotesk), sans-serif;
+  --font-stat-display: var(--font-hanken-grotesk), sans-serif;
+  --font-display-lg: var(--font-newsreader), serif;
 
   --text-headline-lg-mobile: 28px;
   --text-headline-lg-mobile--line-height: 36px;
