@@ -100,16 +100,25 @@
   --text-display-lg--letter-spacing: -0.02em;
 }
 
+/* Hide scrollbar globally */
+::-webkit-scrollbar {
+  display: none;
+}
+
 :root {
   color-scheme: light;
   background-color: #faf9f6;
   color: #1a1c1a;
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
 }
 
 body {
   background: var(--color-background);
   color: var(--color-on-background);
   font-family: var(--font-body-md);
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
 }
 
 @layer utilities {
