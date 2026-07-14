@@ -67,11 +67,8 @@ export default function ScrollProvider({ children }: { children: React.ReactNode
         // Smooth mouse wheel scrolling
         smoothWheel: true,
 
-        // Sync touch devices so mobile also gets smooth inertia
-        // syncTouch: true creates a silky feel on iOS/Android
-        syncTouch: true,
-        syncTouchLerp: 0.06,
-        touchMultiplier: 28,
+        // Do not force-sync touch on mobile to leverage native hardware-accelerated inertia
+        syncTouch: false,
 
         // autoRaf: false — GSAP ticker drives the loop (see GSAPLenisSync above)
         // This is critical: without this, two RAF loops compete and stutter

@@ -11,6 +11,8 @@ import AnimatedButton from "../components/ui/animated-button";
 import NotchNavbar from "../components/ui/notch-navbar";
 import { LogoCloud } from "../components/ui/logo-cloud";
 import { StackedSteps } from "../components/ui/stacked-steps";
+import { EcosystemShowcase } from "../components/ui/ecosystem-showcase";
+import { PlatformNetwork } from "../components/ui/platform-network";
 
 const McpFlow = dynamic(() => import("../components/ui/mcp-flow"), {
   ssr: false,
@@ -308,7 +310,7 @@ export default function Home() {
 
     // ─── 10. Engine cards ───────────────────────────────────────────────────
     gsap.fromTo(
-      ".engine-card",
+      "[id='platform-engine'] .group",
       { autoAlpha: 0, y: 36, scale: 0.97, force3D: true },
       {
         ...defaults,
@@ -418,7 +420,7 @@ export default function Home() {
               <div className="grid gap-10 lg:grid-cols-[0.95fr_1.05fr] items-center">
                 <div className="space-y-6">
                   <p className="font-label-caps text-label-caps uppercase text-accent-green">Trusted by modern AI teams</p>
-                  <h2 className="text-headline-xl font-headline-xl leading-tight">Built to scale carbon intelligence across product and operations.</h2>
+                  <h2 className="gsap-title font-headline-xl text-headline-xl leading-tight text-text-main">Built to scale carbon intelligence across product and operations.</h2>
                   <p className="max-w-xl font-body-xl text-body-xl text-text-muted">ZeroCarbon MCP delivers live signals, actionable carbon guidance, and policy-safe workflow automation for companies shipping sustainable AI and cloud products.</p>
                 </div>
                 <div className="grid gap-4 sm:grid-cols-3">
@@ -457,48 +459,70 @@ export default function Home() {
         {/* Platform Engine */}
         <section id="platform-engine" className="px-grid-margin py-12 md:py-16">
           <div className="max-w-container-max mx-auto grid gap-10 lg:grid-cols-[0.95fr_1.05fr] items-center">
-            <div className="space-y-6">
-              <p className="font-label-caps text-label-caps uppercase text-accent-green">Platform engine</p>
-              <h2 className="font-headline-xl text-headline-xl max-md:text-headline-lg leading-tight">A live network for carbon decisions, not just reporting.</h2>
-              <p className="max-w-xl font-body-xl text-body-xl text-text-muted">ZeroCarbon MCP stitches carbon telemetry, agent triggers, and audit workflows together with one interface that keeps every stakeholder aligned.</p>
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div className="engine-card rounded-[32px] border border-outline-variant/15 bg-white p-8 shadow-sm">
-                  <span className="font-label-caps text-label-caps uppercase text-text-muted">Automated</span>
-                  <h3 className="mt-4 font-headline-lg text-[22px]">Policy-safe alerts</h3>
-                  <p className="mt-4 font-body-md text-text-muted">Every detected carbon spike is enriched with actions, context, and stakeholder routing.</p>
-                </div>
-                <div className="engine-card rounded-[32px] border border-outline-variant/15 bg-white p-8 shadow-sm">
-                  <span className="font-label-caps text-label-caps uppercase text-text-muted">Connected</span>
-                  <h3 className="mt-4 font-headline-lg text-[22px]">Agent-native workflows</h3>
-                  <p className="mt-4 font-body-md text-text-muted">Send signals to AI agents, engineering tools, and compliance systems without manual hand-offs.</p>
-                </div>
+            <div className="space-y-8">
+              <div className="space-y-4">
+                <p className="font-label-caps text-label-caps uppercase text-accent-green">Platform engine</p>
+                <h2 className="gsap-title font-headline-xl text-headline-xl max-md:text-headline-lg leading-tight text-text-main">
+                  A live network for carbon decisions, not just reporting.
+                </h2>
+                <p className="max-w-xl font-body-xl text-body-xl text-text-muted leading-relaxed">
+                  ZeroCarbon MCP stitches carbon telemetry, agent triggers, and audit workflows together with one interface that keeps every stakeholder aligned.
+                </p>
+              </div>
+
+              {/* Feature List with Soft Dividers and Hover Interactions */}
+              <div className="border-t border-outline-variant/10 divide-y divide-outline-variant/10">
+                {[
+                  {
+                    title: "Live Signals",
+                    description: "Ingest real-time carbon data from devices, cloud, and applications.",
+                    icon: "sensors",
+                  },
+                  {
+                    title: "Smart Automation",
+                    description: "Trigger agent actions and route workflows automatically.",
+                    icon: "bolt",
+                  },
+                  {
+                    title: "Policy & Controls",
+                    description: "Enforce governance, compliance, and business rules at scale.",
+                    icon: "verified_user",
+                  },
+                  {
+                    title: "Unified Visibility",
+                    description: "One interface for metrics, audits, and stakeholder alignment.",
+                    icon: "visibility",
+                  },
+                ].map((feature, idx) => (
+                  <div
+                    key={idx}
+                    className="group py-5 flex items-center justify-between gap-6 cursor-pointer"
+                  >
+                    <div className="flex items-center gap-4">
+                      <div className="w-10 h-10 rounded-full bg-slate-50 border border-outline-variant/5 flex items-center justify-center shrink-0 group-hover:bg-accent-green/5 group-hover:border-accent-green/10 transition-colors duration-300">
+                        <span className="material-symbols-outlined text-[19px] text-accent-green group-hover:scale-110 transition-transform duration-300">
+                          {feature.icon}
+                        </span>
+                      </div>
+                      <div>
+                        <h4 className="font-body-md font-medium text-sm text-text-main group-hover:text-accent-green transition-colors duration-300">
+                          {feature.title}
+                        </h4>
+                        <p className="font-body-md text-xs text-text-muted mt-1 leading-normal max-w-md">
+                          {feature.description}
+                        </p>
+                      </div>
+                    </div>
+                    <span className="material-symbols-outlined text-text-muted/40 text-sm group-hover:translate-x-1 group-hover:text-accent-green transition-all duration-300">
+                      arrow_forward
+                    </span>
+                  </div>
+                ))}
               </div>
             </div>
-            <div className="flow-soft relative overflow-hidden rounded-[40px] border border-outline-variant/20 bg-surface-mint/80 p-10 shadow-[0_20px_40px_rgba(3,36,22,0.08)]">
-              <div className="absolute left-6 top-6 h-28 w-28 rounded-full bg-accent-green/10 blur-3xl"></div>
-              <div className="relative grid gap-6">
-                <div className="engine-node-card rounded-[32px] bg-white p-6 shadow-sm">
-                  <p className="font-label-caps text-label-caps uppercase text-text-muted">Node</p>
-                  <p className="mt-3 text-xl font-semibold text-primary">Carbon stream index</p>
-                </div>
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <div className="engine-node-card rounded-[32px] bg-white p-6 shadow-sm">
-                    <p className="font-label-caps text-label-caps uppercase text-text-muted">Action</p>
-                    <p className="mt-3 text-xl font-semibold text-primary">Dispatch rule</p>
-                  </div>
-                  <div className="engine-node-card rounded-[32px] bg-white p-6 shadow-sm">
-                    <p className="font-label-caps text-label-caps uppercase text-text-muted">Metric</p>
-                    <p className="mt-3 text-xl font-semibold text-primary">Scope exposure</p>
-                  </div>
-                </div>
-                <div className="engine-network relative rounded-4xl bg-primary/5 p-8">
-                  <div className="engine-bubble engine-bubble-1">Model</div>
-                  <div className="engine-bubble engine-bubble-2">Ledger</div>
-                  <div className="engine-bubble engine-bubble-3">Audit</div>
-                  <div className="engine-bubble engine-bubble-4">Compliance</div>
-                </div>
-              </div>
-            </div>
+            
+            {/* Interactive Node Network Showcase */}
+            <PlatformNetwork />
           </div>
         </section>
 
@@ -509,7 +533,7 @@ export default function Home() {
               <div className="absolute -right-10 top-8 h-40 w-40 rounded-full bg-white/10 blur-3xl"></div>
               <div className="absolute left-8 bottom-12 h-28 w-28 rounded-full border border-white/15 bg-white/5"></div>
               <p className="font-label-caps text-label-caps uppercase text-accent-green/80">Signal intelligence</p>
-              <h2 className="mt-4 font-headline-xl text-headline-xl max-md:text-headline-lg leading-tight">Watch your carbon footprint move from data to decisions.</h2>
+              <h2 className="gsap-title mt-4 font-headline-xl text-headline-xl max-md:text-headline-lg leading-tight">Watch your carbon footprint move from data to decisions.</h2>
               <p className="mt-6 max-w-xl font-body-xl text-on-primary/80">Track every emission source and compliance alert in one place with live graphs, AI-driven recommendations, and dispatch-ready summaries.</p>
               <div className="mt-10 grid gap-4 sm:grid-cols-3">
                 <div className="rounded-[32px] border border-white/15 bg-white/10 p-6">
@@ -584,7 +608,7 @@ export default function Home() {
             <div className="relative grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
               <div className="space-y-5">
                 <p className="font-label-caps text-label-caps text-accent-green uppercase">Built for modern operators</p>
-                <h2 className="font-headline-xl text-headline-xl max-md:text-headline-lg leading-tight">A launchpad for carbon-aware product teams.</h2>
+                <h2 className="gsap-title font-headline-xl text-headline-xl max-md:text-headline-lg leading-tight text-text-main">A launchpad for carbon-aware product teams.</h2>
                 <p className="max-w-xl font-body-xl text-body-xl text-text-muted">
                   From infrastructure data to executive reporting, ZeroCarbon MCP turns climate work into a seamless operational layer.
                 </p>
@@ -652,58 +676,8 @@ export default function Home() {
         </section>
 
         {/* Ecosystem */}
-        <section id="architecture" className="bg-primary text-on-primary py-12 md:py-16 overflow-hidden">
-          <div className="max-w-container-max mx-auto px-grid-margin grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-            <div className="space-y-10">
-              <div className="space-y-4">
-
-                <p className="font-label-caps text-label-caps text-primary-fixed opacity-70 uppercase">Integration Hub</p>
-                <h2 className="gsap-title font-headline-xl text-headline-xl">Broad Ecosystem Support</h2>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="bg-on-primary-fixed-variant/20 p-4 rounded-xl flex items-center gap-3 border border-white/5">
-                  <span className="material-symbols-outlined text-primary-fixed">terminal</span>
-                  <span className="font-body-md">Claude 3.5</span>
-                </div>
-                <div className="bg-on-primary-fixed-variant/20 p-4 rounded-xl flex items-center gap-3 border border-white/5">
-                  <span className="material-symbols-outlined text-primary-fixed">code</span>
-                  <span className="font-body-md">Cursor</span>
-                </div>
-                <div className="bg-on-primary-fixed-variant/20 p-4 rounded-xl flex items-center gap-3 border border-white/5">
-                  <span className="material-symbols-outlined text-primary-fixed">waves</span>
-                  <span className="font-body-md">Windsurf</span>
-                </div>
-                <div className="bg-on-primary-fixed-variant/20 p-4 rounded-xl flex items-center gap-3 border border-white/5">
-                  <span className="material-symbols-outlined text-primary-fixed">lan</span>
-                  <span className="font-body-md">HTTP Bridge</span>
-                </div>
-              </div>
-              <div className="flex gap-16 pt-6">
-              <div>
-                  <p className="font-stat-display text-stat-display text-primary-fixed" data-count="500" data-count-suffix="+">0</p>
-                  <p className="font-body-md text-primary-fixed/60">Emission Factors</p>
-                </div>
-                <div>
-                  <p className="font-stat-display text-stat-display text-primary-fixed" data-count="24" data-count-prefix="" data-count-divider="/" data-count-suffix="7">0</p>
-                  <p className="font-body-md text-primary-fixed/60">Audit Support</p>
-                </div>
-
-              </div>
-            </div>
-            <div className="relative group stagger-item w-full aspect-4/3" style={{ transitionDelay: '200ms' }}>
-              <div className="flow-soft rounded-[40px] overflow-hidden shadow-2xl relative w-full h-full">
-                <Image 
-                  alt="Neural sustainability network illustration" 
-                  className="object-cover" 
-                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuD1BQbrQ_6WpbvTn8YQhoiVdUi2QG8rygmz4M0bW1u8XWMSO-YZ9dWKVuQXyiqyYFFIghtSp8kTJg0LwmnWByZHybykPxIdjtMwF32RjrGvsR3mQf0jz5smppkFLfRQJFPvXRE7ggzaLZc2NflI35fjKB-trzRZmRDlnL24xHF18rWonjX-EDeCk_bRazd82syRs8qbYe7nE9skJ6FlNu7wEz5f8qlHvJEWiMTBABcXZYfvD-NBsoWi_hGyr_QFGhAO" 
-                  fill
-                  sizes="(max-width: 1024px) 100vw, 50vw"
-                  priority={false}
-                />
-                <div className="absolute inset-0 bg-linear-to-tr from-primary/40 to-transparent"></div>
-              </div>
-            </div>
-          </div>
+        <section id="architecture" className="bg-background text-text-main py-4 md:py-6 overflow-hidden">
+          <EcosystemShowcase />
         </section>
 
         <StackedSteps />

@@ -35,7 +35,12 @@ An interactive, high-fidelity code sandbox demonstrating the Model Context Proto
 ### 🎯 Single-RAF-Loop Smooth Scroll (Lenis + GSAP)
 - **One Unified Tick Loop** — GSAP's ticker drives Lenis (`autoRaf: false`), ensuring that scroll checks and animations share a single frame scheduler at a solid 60fps.
 - **lagSmoothing(0)** — disables GSAP's lag compensation to avoid micro-jitter with Lenis.
-- **syncTouch: true** — enables smooth touch inertial scrolling for iOS and Android.
+- **Mobile Native Inertia** — synchronized touch inertia is disabled on mobile viewports to utilize the hardware-accelerated, natural device scroll response.
+
+### 🖼️ Platform Engine Workflow (Static Image Optimization)
+The right-hand interactive panel has been replaced with a high-resolution, static layout matching the pixel-perfect targets:
+- **Exact Container Fit**: Nested in a border-radius `32px` card with a light cream background (`#f6f9f7`), subtle outline, and soft shadow.
+- **Overflow Margin Pushing**: Uses `scale-[1.08]` with Next.js `priority` preloading to push outer screenshot boundaries past container edges, eliminating double borders and raw white borders.
 
 ---
 
@@ -96,9 +101,10 @@ components/ui/
   animated-button.tsx  # Shine-effect CTA button
   faq-accordion.tsx    # Animated FAQ accordion
   kinetic-text-loader.tsx  # Animated loading screen
+  logo-cloud.tsx       # Infinite slider with edge transparency fades
   mcp-flow.tsx         # React Flow MCP diagram
   notch-navbar.tsx     # Apple notch-style navigation
-  logo-cloud.tsx       # Infinite slider with edge transparency fades
+  platform-network.tsx # Proportional workflow image renderer
   ScrollStack.tsx      # GSAP container-pinned card stack component
   ScrollStack.css      # ScrollStack layout properties
   stacked-steps.tsx    # Step content with ZeroCarbon styles
