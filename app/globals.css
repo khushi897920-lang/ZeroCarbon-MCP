@@ -105,6 +105,10 @@
   display: none;
 }
 
+html {
+  scroll-snap-type: y mandatory;
+}
+
 :root {
   color-scheme: light;
   background-color: #faf9f6;

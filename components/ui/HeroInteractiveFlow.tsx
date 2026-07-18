@@ -48,11 +48,11 @@ const HeroInteractiveFlow = ({ containerHeight }: { containerHeight: number }) =
         return (
           <div className="p-4 space-y-3">
             <textarea
-              className="w-full p-3 border border-slate-200 rounded-xl bg-slate-50/90 text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-sm"
+              className="w-full p-3 border border-accent-green/30 rounded-xl bg-surface-mint/50 text-text-main focus:outline-none focus:ring-2 focus:ring-accent-green focus:border-accent-green text-sm backdrop-blur-sm"
               rows={2}
               defaultValue="Calculate the GHG scope 3 emissions for our recent AWS server usage."
             ></textarea>
-            <button className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2 px-4 rounded-xl transition-colors flex items-center justify-center gap-2 text-sm">
+            <button className="w-full bg-accent-green hover:bg-emerald-500 text-white font-semibold py-2 px-4 rounded-xl transition-colors flex items-center justify-center gap-2 text-sm shadow-lg shadow-accent-green/20">
               <span className="material-symbols-outlined text-base">send</span>
               Send to AI
             </button>
@@ -62,7 +62,7 @@ const HeroInteractiveFlow = ({ containerHeight }: { containerHeight: number }) =
       case "ai":
         return (
           <div className="p-4">
-            <div className="bg-slate-900/90 rounded-xl p-4 font-mono text-xs text-slate-300 backdrop-blur">
+            <div className="bg-emerald-950/90 border border-accent-green/20 rounded-xl p-4 font-mono text-xs text-emerald-300 backdrop-blur">
               {processingSteps.slice(0, processingStep + 1).map((step, index) => (
                 <div key={index} className="flex items-center gap-2 mb-1">
                   <span className="text-emerald-400">$</span>
@@ -213,10 +213,10 @@ const HeroInteractiveFlow = ({ containerHeight }: { containerHeight: number }) =
                 animate={{ scale: 1, opacity: 1, y: 0 }}
                 exit={{ scale: 0.7, opacity: 0, y: -20 }}
                 transition={{ type: "spring", stiffness: 300, damping: 25 }}
-                className="bg-white/80 rounded-2xl shadow-2xl border border-white/30 overflow-hidden w-full backdrop-blur-md"
+                className="bg-surface-mint/80 rounded-2xl shadow-[0_8px_32px_0_rgba(4,43,26,0.3)] border border-accent-green/30 overflow-hidden w-full backdrop-blur-md"
               >
                 {/* Dialog Header */}
-                <div className="bg-emerald-900/80 text-white p-3 flex items-center justify-between backdrop-blur">
+                <div className="bg-emerald-950/90 text-emerald-50 p-3 flex items-center justify-between backdrop-blur-lg border-b border-accent-green/20">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center">
                       <span className="material-symbols-outlined text-base">

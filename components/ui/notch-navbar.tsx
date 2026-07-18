@@ -46,7 +46,6 @@ export function NotchNavbar({ className, ...props }: React.HTMLAttributes<HTMLEl
     left: [
       { label: "Home", href: "#hero", icon: Home },
       { label: "Features", href: "#features", icon: Zap },
-      { label: "Pricing", href: "#pricing", icon: CreditCard }
     ],
     right: [
       { label: "Developers", href: "#developers", icon: Code },

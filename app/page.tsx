@@ -384,7 +384,7 @@ export default function Home() {
 
       <main className="relative overflow-x-hidden">
         {/* Hero Section */}
-        <section id="hero" className="min-h-screen flex items-center pt-24 pb-16 w-full organic-bg ambient-hero overflow-visible relative">
+        <section id="hero" className="flex items-center w-full organic-bg ambient-hero overflow-visible relative h-[100dvh] w-full snap-start snap-always shrink-0">
           <div className="max-w-container-max mx-auto px-grid-margin relative">
             <div className="absolute top-0 right-0 h-90 w-90 rounded-full bg-accent-green/10 blur-3xl z-0"></div>
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch relative">
@@ -436,13 +436,11 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Logo Marquee — trust strip between Hero and Social Proof */}
-        <LogoCloud />
-
-        {/* Social Proof */}
-        <section id="social-proof" className="py-6">
-          <div className="max-w-container-max mx-auto px-grid-margin">
-            <div className="flow-soft relative overflow-hidden rounded-[40px] border border-outline-variant/20 bg-white p-6 shadow-[0_40px_90px_rgba(3,36,22,0.08)]">
+        {/* Social Proof with Logo Marquee */}
+        <section id="social-proof" className="h-[100dvh] w-full snap-start snap-always shrink-0 flex flex-col justify-between py-10 overflow-hidden">
+          <LogoCloud />
+          <div className="max-w-container-max mx-auto px-grid-margin flex-1 w-full flex flex-col mt-10">
+            <div className="flow-soft flex-1 flex flex-col justify-center relative overflow-hidden rounded-[40px] border border-outline-variant/20 bg-white p-8 lg:p-12 shadow-[0_40px_90px_rgba(3,36,22,0.08)]">
               <div className="absolute -right-10 top-12 h-48 w-48 rounded-full bg-accent-green/10 blur-3xl"></div>
               <div className="grid gap-6 lg:grid-cols-[0.95fr_1.05fr] items-center">
                 <div className="space-y-4">
@@ -484,7 +482,7 @@ export default function Home() {
         </section>
 
         {/* Platform Engine */}
-        <section id="platform-engine" className="px-grid-margin py-12 md:py-16">
+        <section id="platform-engine" className="px-grid-margin h-[100dvh] w-full snap-start snap-always shrink-0 flex flex-col justify-center overflow-hidden">
           <div className="max-w-container-max mx-auto grid gap-10 lg:grid-cols-[0.95fr_1.05fr] items-center">
             <div className="space-y-8">
               <div className="space-y-4">
@@ -554,14 +552,15 @@ export default function Home() {
         </section>
 
         {/* Quick Answer */}
-        <section id="pulse" className="px-grid-margin py-12 md:py-16">
-          <div className="max-w-container-max mx-auto grid gap-8 lg:grid-cols-[0.95fr_1.05fr] items-start">
-            <div className="flow-soft relative overflow-hidden rounded-[40px] border border-outline-variant/20 bg-primary text-on-primary p-10 shadow-[0_28px_90px_rgba(3,36,22,0.16)]">
+        <section id="pulse" className="px-grid-margin h-[100dvh] w-full snap-start snap-always shrink-0 flex flex-col justify-center overflow-hidden">
+          <div className="max-w-container-max mx-auto grid gap-8 lg:grid-cols-[0.95fr_1.05fr] items-stretch min-h-[60vh] w-full">
+            <div className="flow-soft relative overflow-hidden rounded-[40px] border border-outline-variant/20 bg-primary text-on-primary p-10 shadow-[0_28px_90px_rgba(3,36,22,0.16)] flex flex-col justify-between">
               <div className="absolute -right-10 top-8 h-40 w-40 rounded-full bg-white/10 blur-3xl"></div>
-              <div className="absolute left-8 bottom-12 h-28 w-28 rounded-full border border-white/15 bg-white/5"></div>
-              <p className="font-label-caps text-label-caps uppercase text-accent-green/80">Signal intelligence</p>
-              <h2 className="gsap-title mt-4 font-headline-xl text-headline-xl max-md:text-headline-lg leading-tight">Watch your carbon footprint move from data to decisions.</h2>
-              <p className="mt-6 max-w-xl font-body-xl text-on-primary/80">Track every emission source and compliance alert in one place with live graphs, AI-driven recommendations, and dispatch-ready summaries.</p>
+              <div>
+                <p className="font-label-caps text-label-caps uppercase text-accent-green/80">Signal intelligence</p>
+                <h2 className="gsap-title mt-4 font-headline-xl text-headline-xl max-md:text-headline-lg leading-tight">Watch your carbon footprint move from data to decisions.</h2>
+                <p className="mt-6 max-w-xl font-body-xl text-on-primary/80">Track every emission source and compliance alert in one place with live graphs, AI-driven recommendations, and dispatch-ready summaries.</p>
+              </div>
               <div className="mt-10 grid gap-4 sm:grid-cols-3">
                 <div className="rounded-[32px] border border-white/15 bg-white/10 p-6">
                   <p className="text-sm uppercase tracking-[0.2em] text-white/70">Alerts</p>
@@ -577,8 +576,8 @@ export default function Home() {
                 </div>
               </div>
             </div>
-            <div className="grid gap-4">
-              <div className="glass-card rounded-4xl border border-outline-variant/20 bg-white/95 p-8 shadow-sm">
+            <div className="flex flex-col gap-4">
+              <div className="glass-card flex-1 rounded-[40px] border border-outline-variant/20 bg-white/95 p-8 lg:p-10 shadow-sm flex flex-col justify-center">
                 <div className="flex items-center justify-between gap-4">
                   <div>
                     <p className="font-label-caps text-label-caps uppercase text-text-muted">Streamlined workflow</p>
@@ -595,7 +594,7 @@ export default function Home() {
                   </div>
                 </div>
               </div>
-              <div className="flow-soft rounded-[40px] border border-outline-variant/20 bg-white p-8 shadow-[0_20px_40px_rgba(3,36,22,0.08)]">
+              <div className="flow-soft flex-1 rounded-[40px] border border-outline-variant/20 bg-white p-8 lg:p-10 shadow-[0_20px_40px_rgba(3,36,22,0.08)] flex flex-col justify-center">
                 <p className="font-label-caps text-label-caps uppercase text-accent-green">Trusted by</p>
                 <div className="mt-8 grid gap-4 sm:grid-cols-2">
                   <div className="rounded-[28px] border border-outline-variant/15 bg-surface-mint/80 p-4 text-center">
@@ -617,7 +616,7 @@ export default function Home() {
         </section>
 
         {/* Quick Answer */}
-        <section className="px-grid-margin py-12 md:py-16">
+        <section className="px-grid-margin h-[100dvh] w-full snap-start snap-always shrink-0 flex flex-col justify-center overflow-hidden">
           <div className="bg-surface-mint rounded-[48px] p-12 md:p-24 text-center max-w-5xl mx-auto space-y-8">
             <p className="font-label-caps text-label-caps text-accent-green tracking-widest uppercase">Quick Answer</p>
             <h2 className="gsap-title font-headline-xl text-headline-xl max-md:text-headline-lg leading-tight">What is ZeroCarbon MCP?</h2>
@@ -629,7 +628,7 @@ export default function Home() {
         </section>
 
         {/* Signal Blocks */}
-        <section id="signal-blocks" className="px-grid-margin py-12 md:py-16">
+        <section id="signal-blocks" className="px-grid-margin h-[100dvh] w-full snap-start snap-always shrink-0 flex flex-col justify-center overflow-hidden">
           <div className="flow-soft relative overflow-hidden rounded-[40px] border border-outline-variant/20 bg-white p-8 md:p-12 shadow-[0_24px_80px_rgba(3,36,22,0.05)]">
             <div className="ambient-grid-panel absolute inset-0"></div>
             <div className="relative grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
@@ -672,7 +671,7 @@ export default function Home() {
         </section>
 
         {/* Feature Grid */}
-        <section id="features" className="px-grid-margin py-12 md:py-16 max-w-container-max mx-auto">
+        <section id="features" className="px-grid-margin max-w-container-max mx-auto h-[100dvh] w-full snap-start snap-always shrink-0 flex flex-col justify-center overflow-hidden">
           <div className="text-center space-y-4 mb-12">
             <p className="font-label-caps text-label-caps text-accent-green uppercase">Platform Features</p>
             <h2 className="gsap-title font-headline-xl text-headline-xl">Engineered for absolute accuracy</h2>
@@ -703,13 +702,13 @@ export default function Home() {
         </section>
 
         {/* Ecosystem */}
-        <section id="architecture" className="bg-background text-text-main py-4 md:py-6 overflow-hidden">
+        <section id="architecture" className="bg-background text-text-main overflow-hidden h-[100dvh] w-full snap-start snap-always shrink-0 flex flex-col justify-center">
           <EcosystemShowcase />
         </section>
 
         <StackedSteps />
         {/* Code Section */}
-        <section id="developers" className="px-grid-margin py-12 md:py-16 max-w-container-max mx-auto">
+        <section id="developers" className="px-grid-margin max-w-container-max mx-auto h-[100dvh] w-full snap-start snap-always shrink-0 flex flex-col justify-center overflow-hidden">
           <div className="bg-surface-container-low rounded-[48px] p-8 md:p-16 border border-outline-variant/10 grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
             <div className="order-2 lg:order-1 relative group">
               {/* Ambient Glow Blob */}
@@ -752,85 +751,9 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Pricing Section */}
-        <section id="pricing" className="px-grid-margin py-12 md:py-16 max-w-container-max mx-auto">
-          <div className="text-center space-y-4 mb-12">
-            <p className="font-label-caps text-label-caps text-accent-green uppercase">Flexible Plans</p>
-            <h2 className="gsap-title font-headline-xl text-headline-xl">Sized for your operations</h2>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {/* Starter Plan */}
-            <div className="pricing-card bg-white p-10 rounded-3xl border border-outline-variant/10 shadow-sm flex flex-col justify-between transition-all duration-400">
-              <div>
-                <h3 className="font-headline-lg text-[24px] mb-2">Developer</h3>
-                <p className="font-body-md text-text-muted mb-6">Perfect for staging & small team experiments.</p>
-                <p className="font-stat-display text-stat-display text-primary mb-6">$0 <span className="text-[16px] font-normal text-text-muted">/ month</span></p>
-                <ul className="space-y-4 mb-8 text-body-md text-text-main">
-                  <li className="flex items-center gap-2.5">
-                    <span className="material-symbols-outlined text-[18px] text-accent-green">check</span> Up to 5 projects
-                  </li>
-                  <li className="flex items-center gap-2.5">
-                    <span className="material-symbols-outlined text-[18px] text-accent-green">check</span> 5,000 API requests/mo
-                  </li>
-                  <li className="flex items-center gap-2.5">
-                    <span className="material-symbols-outlined text-[18px] text-accent-green">check</span> Community support
-                  </li>
-                </ul>
-              </div>
-              <AnimatedButton variant="secondary" className="w-full py-3 rounded-full">Get Started</AnimatedButton>
-            </div>
-            {/* Growth Plan */}
-            <div className="pricing-card section-card group bg-white p-10 rounded-3xl border-2 border-accent-green shadow-md flex flex-col justify-between relative transition-all duration-400">
-              <div className="absolute top-0 right-8 -translate-y-1/2 bg-accent-green text-white px-4 py-1 rounded-full text-xs font-bold font-label-caps tracking-wider">Popular</div>
-              <div>
-                <h3 className="font-headline-lg text-[24px] mb-2">Growth</h3>
-                <p className="font-body-md text-text-muted mb-6">For scaling engineering organizations.</p>
-                <p className="font-stat-display text-stat-display text-primary mb-6">$499 <span className="text-[16px] font-normal text-text-muted">/ month</span></p>
-                <ul className="space-y-4 mb-8 text-body-md text-text-main">
-                  <li className="flex items-center gap-2.5">
-                    <span className="material-symbols-outlined text-[18px] text-accent-green">check</span> Unlimited projects
-                  </li>
-                  <li className="flex items-center gap-2.5">
-                    <span className="material-symbols-outlined text-[18px] text-accent-green">check</span> Real-time compliance reporting
-                  </li>
-                  <li className="flex items-center gap-2.5">
-                    <span className="material-symbols-outlined text-[18px] text-accent-green">check</span> 100,000 API requests/mo
-                  </li>
-                  <li className="flex items-center gap-2.5">
-                    <span className="material-symbols-outlined text-[18px] text-accent-green">check</span> 24/7 Email & Slack support
-                  </li>
-                </ul>
-              </div>
-              <AnimatedButton variant="solid" className="w-full py-3 rounded-full">Start Free Trial</AnimatedButton>
-            </div>
-            {/* Enterprise Plan */}
-            <div className="pricing-card bg-white p-10 rounded-3xl border border-outline-variant/10 shadow-sm flex flex-col justify-between transition-all duration-400">
-              <div>
-                <h3 className="font-headline-lg text-[24px] mb-2">Enterprise</h3>
-                <p className="font-body-md text-text-muted mb-6">Custom architecture for global supply chains.</p>
-                <p className="font-stat-display text-stat-display text-primary mb-6">Custom</p>
-                <ul className="space-y-4 mb-8 text-body-md text-text-main">
-                  <li className="flex items-center gap-2.5">
-                    <span className="material-symbols-outlined text-[18px] text-accent-green">check</span> Dedicated compliance officer
-                  </li>
-                  <li className="flex items-center gap-2.5">
-                    <span className="material-symbols-outlined text-[18px] text-accent-green">check</span> Unlimited API volume
-                  </li>
-                  <li className="flex items-center gap-2.5">
-                    <span className="material-symbols-outlined text-[18px] text-accent-green">check</span> Custom integrations & SLA
-                  </li>
-                  <li className="flex items-center gap-2.5">
-                    <span className="material-symbols-outlined text-[18px] text-accent-green">check</span> Zero-carbon consulting included
-                  </li>
-                </ul>
-              </div>
-              <AnimatedButton variant="secondary" className="w-full py-3 rounded-full" onClick={(e) => handleNavClick(e, '#contact')}>Contact Sales</AnimatedButton>
-            </div>
-          </div>
-        </section>
 
         {/* FAQ */}
-        <section id="faq" className="px-grid-margin py-12 md:py-16 max-w-4xl mx-auto">
+        <section id="faq" className="px-grid-margin max-w-4xl mx-auto py-24 md:py-32 w-full snap-start snap-always shrink-0 flex flex-col justify-center">
           <FaqAccordion 
             title="Frequently asked questions"
             items={[
@@ -851,7 +774,7 @@ export default function Home() {
         </section>
 
         {/* Final CTA */}
-        <section id="contact" className="px-grid-margin py-12 md:py-16">
+        <section id="contact" className="px-grid-margin h-[100dvh] w-full snap-start snap-always shrink-0 flex flex-col justify-center overflow-hidden">
           <div className="cta-shell bg-primary text-on-primary rounded-[48px] p-12 md:p-24 text-center relative overflow-hidden">
             <div className="absolute inset-0 opacity-20">
               {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -884,7 +807,6 @@ export default function Home() {
             <ul className="space-y-4">
               <li><a className="text-body-md text-text-muted hover:text-primary transition-colors cursor-pointer" onClick={(e) => handleNavClick(e, '#features')}>Solutions</a></li>
               <li><a className="text-body-md text-text-muted hover:text-primary transition-colors cursor-pointer" onClick={(e) => handleNavClick(e, '#architecture')}>Architecture</a></li>
-              <li><a className="text-body-md text-text-muted hover:text-primary transition-colors cursor-pointer" onClick={(e) => handleNavClick(e, '#pricing')}>Pricing</a></li>
             </ul>
           </div>
           <div>

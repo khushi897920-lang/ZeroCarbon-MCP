@@ -6,7 +6,7 @@ import Image from "next/image";
 export function PlatformNetwork() {
   return (
     <div
-      className="relative w-full overflow-hidden bg-[#f6f9f7] border border-[#dce5df] shadow-[0_4px_20px_rgba(0,0,0,0.03)]"
+      className="relative w-full max-w-[580px] mx-auto overflow-hidden bg-[#f6f9f7] border border-[#dce5df] shadow-[0_4px_20px_rgba(0,0,0,0.03)]"
       style={{
         aspectRatio: "1 / 1",
         borderRadius: 32,
