@@ -384,9 +384,9 @@ export default function Home() {
 
       <main className="relative overflow-x-hidden">
         {/* Hero Section */}
-        <section id="hero" className="flex items-center w-full organic-bg ambient-hero overflow-visible relative h-[100dvh] w-full snap-start snap-always shrink-0">
+        <section id="hero" className="flex items-center w-full organic-bg ambient-hero overflow-visible relative min-h-[100dvh] py-16 md:py-24 w-full">
           <div className="max-w-container-max mx-auto px-grid-margin relative">
-            <div className="absolute top-0 right-0 h-90 w-90 rounded-full bg-accent-green/10 blur-3xl z-0"></div>
+            <div className="absolute top-0 right-0 h-90 w-90 rounded-full bg-accent-green/5 blur-2xl z-0"></div>
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch relative">
             <div ref={leftColumnRef} className="lg:col-span-5 space-y-5 relative z-30 pointer-events-none">
               <div className="inline-flex items-center gap-2 rounded-full border border-accent-green/20 bg-surface-mint/90 px-3 py-1.5 text-xs font-semibold text-accent-green shadow-sm hero-animate pointer-events-auto">
@@ -437,12 +437,12 @@ export default function Home() {
         </section>
 
         {/* Social Proof with Logo Marquee */}
-        <section id="social-proof" className="h-[100dvh] w-full snap-start snap-always shrink-0 flex flex-col justify-between py-10 overflow-hidden">
+        <section id="social-proof" className="min-h-[100dvh] py-16 md:py-24 w-full flex flex-col justify-between py-10">
           <LogoCloud />
           <div className="max-w-container-max mx-auto px-grid-margin flex-1 w-full flex flex-col mt-10">
             <div className="flow-soft flex-1 flex flex-col justify-center relative overflow-hidden rounded-[40px] border border-outline-variant/20 bg-white p-8 lg:p-12 shadow-[0_40px_90px_rgba(3,36,22,0.08)]">
-              <div className="absolute -right-10 top-12 h-48 w-48 rounded-full bg-accent-green/10 blur-3xl"></div>
-              <div className="grid gap-6 lg:grid-cols-[0.95fr_1.05fr] items-center">
+              <div className="absolute -right-10 top-12 h-48 w-48 rounded-full bg-accent-green/5 blur-2xl"></div>
+              <div className="grid grid-cols-1 gap-6 lg:grid-cols-[0.95fr_1.05fr] items-center">
                 <div className="space-y-4">
                   <p className="font-label-caps text-xs uppercase text-accent-green">Trusted by modern AI teams</p>
                   <h2 className="gsap-title font-headline-lg text-[2rem] leading-tight text-text-main">Built to scale carbon intelligence across product and operations.</h2>
@@ -482,8 +482,8 @@ export default function Home() {
         </section>
 
         {/* Platform Engine */}
-        <section id="platform-engine" className="px-grid-margin h-[100dvh] w-full snap-start snap-always shrink-0 flex flex-col justify-center overflow-hidden">
-          <div className="max-w-container-max mx-auto grid gap-10 lg:grid-cols-[0.95fr_1.05fr] items-center">
+        <section id="platform-engine" className="px-grid-margin min-h-[100dvh] py-16 md:py-24 w-full flex flex-col justify-center">
+          <div className="max-w-container-max mx-auto grid grid-cols-1 gap-10 lg:grid-cols-[0.95fr_1.05fr] items-center">
             <div className="space-y-8">
               <div className="space-y-4">
                 <p className="font-label-caps text-label-caps uppercase text-accent-green">Platform engine</p>
@@ -552,10 +552,10 @@ export default function Home() {
         </section>
 
         {/* Quick Answer */}
-        <section id="pulse" className="px-grid-margin h-[100dvh] w-full snap-start snap-always shrink-0 flex flex-col justify-center overflow-hidden">
-          <div className="max-w-container-max mx-auto grid gap-8 lg:grid-cols-[0.95fr_1.05fr] items-stretch min-h-[60vh] w-full">
+        <section id="pulse" className="px-grid-margin min-h-[100dvh] py-16 md:py-24 w-full flex flex-col justify-center">
+          <div className="max-w-container-max mx-auto grid grid-cols-1 gap-8 lg:grid-cols-[0.95fr_1.05fr] items-stretch min-h-[60vh] w-full">
             <div className="flow-soft relative overflow-hidden rounded-[40px] border border-outline-variant/20 bg-primary text-on-primary p-10 shadow-[0_28px_90px_rgba(3,36,22,0.16)] flex flex-col justify-between">
-              <div className="absolute -right-10 top-8 h-40 w-40 rounded-full bg-white/10 blur-3xl"></div>
+              <div className="absolute -right-10 top-8 h-40 w-40 rounded-full bg-white/5 blur-2xl"></div>
               <div>
                 <p className="font-label-caps text-label-caps uppercase text-accent-green/80">Signal intelligence</p>
                 <h2 className="gsap-title mt-4 font-headline-xl text-headline-xl max-md:text-headline-lg leading-tight">Watch your carbon footprint move from data to decisions.</h2>
@@ -616,7 +616,7 @@ export default function Home() {
         </section>
 
         {/* Quick Answer */}
-        <section className="px-grid-margin h-[100dvh] w-full snap-start snap-always shrink-0 flex flex-col justify-center overflow-hidden">
+        <section className="px-grid-margin min-h-[100dvh] py-16 md:py-24 w-full flex flex-col justify-center">
           <div className="bg-surface-mint rounded-[48px] p-12 md:p-24 text-center max-w-5xl mx-auto space-y-8">
             <p className="font-label-caps text-label-caps text-accent-green tracking-widest uppercase">Quick Answer</p>
             <h2 className="gsap-title font-headline-xl text-headline-xl max-md:text-headline-lg leading-tight">What is ZeroCarbon MCP?</h2>
@@ -628,10 +628,10 @@ export default function Home() {
         </section>
 
         {/* Signal Blocks */}
-        <section id="signal-blocks" className="px-grid-margin h-[100dvh] w-full snap-start snap-always shrink-0 flex flex-col justify-center overflow-hidden">
+        <section id="signal-blocks" className="px-grid-margin min-h-[100dvh] py-16 md:py-24 w-full flex flex-col justify-center">
           <div className="flow-soft relative overflow-hidden rounded-[40px] border border-outline-variant/20 bg-white p-8 md:p-12 shadow-[0_24px_80px_rgba(3,36,22,0.05)]">
             <div className="ambient-grid-panel absolute inset-0"></div>
-            <div className="relative grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
+            <div className="relative grid grid-cols-1 gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
               <div className="space-y-5">
                 <p className="font-label-caps text-label-caps text-accent-green uppercase">Built for modern operators</p>
                 <h2 className="gsap-title font-headline-xl text-headline-xl max-md:text-headline-lg leading-tight text-text-main">A launchpad for carbon-aware product teams.</h2>
@@ -671,7 +671,7 @@ export default function Home() {
         </section>
 
         {/* Feature Grid */}
-        <section id="features" className="px-grid-margin max-w-container-max mx-auto h-[100dvh] w-full snap-start snap-always shrink-0 flex flex-col justify-center overflow-hidden">
+        <section id="features" className="px-grid-margin max-w-container-max mx-auto min-h-[100dvh] py-16 md:py-24 w-full flex flex-col justify-center">
           <div className="text-center space-y-4 mb-12">
             <p className="font-label-caps text-label-caps text-accent-green uppercase">Platform Features</p>
             <h2 className="gsap-title font-headline-xl text-headline-xl">Engineered for absolute accuracy</h2>
@@ -702,13 +702,13 @@ export default function Home() {
         </section>
 
         {/* Ecosystem */}
-        <section id="architecture" className="bg-background text-text-main overflow-hidden h-[100dvh] w-full snap-start snap-always shrink-0 flex flex-col justify-center">
+        <section id="architecture" className="bg-background text-text-main min-h-[100dvh] py-16 md:py-24 w-full flex flex-col justify-center">
           <EcosystemShowcase />
         </section>
 
         <StackedSteps />
         {/* Code Section */}
-        <section id="developers" className="px-grid-margin max-w-container-max mx-auto h-[100dvh] w-full snap-start snap-always shrink-0 flex flex-col justify-center overflow-hidden">
+        <section id="developers" className="px-grid-margin max-w-container-max mx-auto min-h-[100dvh] py-16 md:py-24 w-full flex flex-col justify-center">
           <div className="bg-surface-container-low rounded-[48px] p-8 md:p-16 border border-outline-variant/10 grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
             <div className="order-2 lg:order-1 relative group">
               {/* Ambient Glow Blob */}
@@ -753,7 +753,7 @@ export default function Home() {
 
 
         {/* FAQ */}
-        <section id="faq" className="px-grid-margin max-w-4xl mx-auto py-24 md:py-32 w-full snap-start snap-always shrink-0 flex flex-col justify-center">
+        <section id="faq" className="px-grid-margin max-w-4xl mx-auto py-24 md:py-32 w-full flex flex-col justify-center">
           <FaqAccordion 
             title="Frequently asked questions"
             items={[
@@ -774,7 +774,7 @@ export default function Home() {
         </section>
 
         {/* Final CTA */}
-        <section id="contact" className="px-grid-margin h-[100dvh] w-full snap-start snap-always shrink-0 flex flex-col justify-center overflow-hidden">
+        <section id="contact" className="px-grid-margin min-h-[100dvh] py-16 md:py-24 w-full flex flex-col justify-center">
           <div className="cta-shell bg-primary text-on-primary rounded-[48px] p-12 md:p-24 text-center relative overflow-hidden">
             <div className="absolute inset-0 opacity-20">
               {/* eslint-disable-next-line @next/next/no-img-element */}
