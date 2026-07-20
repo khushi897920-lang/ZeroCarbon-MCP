@@ -7,6 +7,6 @@ export default function robots(): MetadataRoute.Robots {
       allow: "/",
       disallow: "/private/",
     },
-    sitemap: "https://zerocarbon-mcp.vercel.app/sitemap.xml",
+    sitemap: "https://zerocarbon.org.in/sitemap.xml",
   };
 }
