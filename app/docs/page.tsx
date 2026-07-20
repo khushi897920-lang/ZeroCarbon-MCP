@@ -14,13 +14,23 @@ const CATEGORIES: DocCategory[] = [
       { id: "quickstart", label: "Quick Start Guide" },
       { id: "mcp-connection", label: "Connect AI Agent (MCP)" },
       { id: "authentication", label: "Authentication" },
+      { id: "ai-guide", label: "AI Developer Guide" },
     ],
   },
   {
-    title: "Core APIs",
+    title: "Infrastructure & Ledger",
     items: [
+      { id: "canonical-model", label: "Canonical Activity Model" },
+      { id: "confidence-scoring", label: "Confidence Scoring" },
+      { id: "carbon-ledger", label: "Carbon Ledger (Double-Entry)" },
       { id: "ingest-telemetry", label: "Ingest Telemetry" },
       { id: "emission-factors", label: "Emission Factors" },
+    ],
+  },
+  {
+    title: "Payments & Marketplace",
+    items: [
+      { id: "offset-marketplace", label: "Carbon Marketplace (Dodo)" },
     ],
   },
 ];
@@ -30,8 +40,13 @@ const OUTLINE_ITEMS: OutlineItem[] = [
   { id: "quickstart", label: "Quick Start Guide" },
   { id: "mcp-connection", label: "Connect AI Agent (MCP)" },
   { id: "authentication", label: "Authentication" },
+  { id: "ai-guide", label: "AI Developer Guide" },
+  { id: "canonical-model", label: "Canonical Activity Model" },
+  { id: "confidence-scoring", label: "Confidence Scoring" },
+  { id: "carbon-ledger", label: "Carbon Ledger (Double-Entry)" },
   { id: "ingest-telemetry", label: "Ingest Telemetry" },
   { id: "emission-factors", label: "Emission Factors" },
+  { id: "offset-marketplace", label: "Carbon Marketplace (Dodo)" },
 ];
 
 export default function DocsPage() {

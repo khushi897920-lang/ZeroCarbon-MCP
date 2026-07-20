@@ -1063,6 +1063,7 @@ export default function Home() {
                     { id: "claude-code", label: "CLAUDE CODE" },
                     { id: "gemini", label: "GEMINI / CLIS" },
                     { id: "api", label: "API / CURL" },
+                    { id: "ai-guide", label: "AI AGENT GUIDE" },
                   ].map((tab) => {
                     const isActive = activeMcpTab === tab.id;
                     return (
@@ -1288,6 +1289,57 @@ export default function Home() {
                               {copiedText === "api-prompt" ? "done" : "content_copy"}
                             </span>
                           </button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {activeMcpTab === "ai-guide" && (
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <p className="text-xs font-bold text-text-main">
+                          ZeroCarbon Architecture Context (AI Guide)
+                        </p>
+                        <p className="text-xs text-text-muted leading-relaxed">
+                          Provide this guide to your AI Agent (Cursor, Claude Desktop, Gemini) to immediately align it on your database models, MCP operations, stack, and idempotency protection.
+                        </p>
+                      </div>
+
+                      <div className="flex flex-wrap gap-2.5">
+                        <a
+                          href="/zerocarbon-ai-guide.md"
+                          download="zerocarbon-ai-guide.md"
+                          className="bg-[#00875A] hover:bg-[#006C48] text-white px-4 py-2 rounded-xl font-bold text-xs flex items-center gap-2 transition-all shadow-sm cursor-pointer"
+                        >
+                          <span className="material-symbols-outlined text-base">download</span>
+                          Download AI_GUIDE.md
+                        </a>
+                        <button
+                          onClick={() => handleCopy(
+                            `# ZeroCarbon Core Stack\n- Framework: Next.js 15.5.12\n- Database: PostgreSQL (Neon + Prisma ORM)\n- Payments: Dodo Payments (MoR)\n- AI/LLM: Gemini 2.5\n- Vector: pgvector`,
+                            "modal-ai-guide-snippet"
+                          )}
+                          className="border border-outline-variant/40 bg-surface hover:bg-instructions-bg text-text-main px-4 py-2 rounded-xl font-bold text-xs flex items-center gap-2 transition-all cursor-pointer"
+                        >
+                          <span className="material-symbols-outlined text-base">
+                            {copiedText === "modal-ai-guide-snippet" ? "done" : "content_copy"}
+                          </span>
+                          Copy Context Snippet
+                        </button>
+                      </div>
+
+                      <div className="grid gap-3">
+                        <div className="p-4 bg-instructions-bg border border-outline-variant/30 rounded-xl space-y-1.5">
+                          <p className="text-[10px] font-bold text-text-muted tracking-wider">AI SYSTEM RULES</p>
+                          <p className="text-xs text-text-muted leading-relaxed">
+                            ZeroCarbon AI Reasoning Gateway runs on <code className="font-mono bg-code-inline-bg px-1 rounded text-code-inline-text">POST /api/v1/mcp</code>. It utilizes a 10-step ReAct reasoning loop, automated self-healing retry on db crashes, and concurrent tool execution.
+                          </p>
+                        </div>
+                        <div className="p-4 bg-instructions-bg border border-outline-variant/30 rounded-xl space-y-1.5">
+                          <p className="text-[10px] font-bold text-text-muted tracking-wider">IDEMPOTENCY & LEDGER</p>
+                          <p className="text-xs text-text-muted leading-relaxed">
+                            Calculations are saved into the double-entry bookkeeping Carbon Ledger. All operations use a strict SHA-256 <code className="font-mono bg-code-inline-bg px-1 rounded text-code-inline-text">idempotency_key</code> verification to block duplicate data writes.
+                          </p>
                         </div>
                       </div>
                     </div>

@@ -518,6 +518,242 @@ client = `}<span className="text-teal-300">ZeroCarbonClient</span>{`(
         </div>
       </section>
 
+      {/* ---------------- SECTION 3.5: AI DEVELOPER GUIDE ---------------- */}
+      <section id="ai-guide" className="scroll-mt-24 space-y-6">
+        <h2 className="font-display-md text-2xl font-bold tracking-tight text-text-main border-b border-neutral-100 dark:border-outline-variant/10 pb-2">
+          AI Developer Guide
+        </h2>
+        <p className="font-body-md text-xs sm:text-sm text-text-muted leading-relaxed">
+          This context guide helps AI agents (like Claude Desktop, Cursor, Gemini) quickly understand the structure, schemas, and endpoints of your ZeroCarbon installation.
+        </p>
+
+        <div className="p-4 sm:p-5 rounded-2xl border border-outline-variant/40 bg-instructions-bg space-y-4">
+          <h4 className="text-xs font-bold text-text-main flex items-center gap-1.5">
+            <span className="material-symbols-outlined text-[16px] text-accent-green-text">
+              smart_toy
+            </span>
+            AI Integration Context
+          </h4>
+          <p className="text-xs text-text-muted leading-relaxed">
+            ZeroCarbon utilizes an ultra-condensed guide for future AI agents to quickly understand the structure, data models, and logic of the ZeroCarbon project without needing to blindly search the entire repository. You can copy the guide configuration or download the full guide below:
+          </p>
+          <div className="flex flex-wrap gap-3">
+            <a
+              href="/zerocarbon-ai-guide.md"
+              download="zerocarbon-ai-guide.md"
+              className="bg-[#00875A] hover:bg-[#006C48] text-white px-4 py-2 rounded-xl font-bold text-xs flex items-center gap-2 transition-all shadow-sm cursor-pointer"
+            >
+              <span className="material-symbols-outlined text-base">download</span>
+              Download AI_GUIDE.md
+            </a>
+            <button
+              onClick={() => onCopy(
+                `# ZeroCarbon Core Stack\n- Framework: Next.js 15.5.12\n- Database: PostgreSQL (Neon + Prisma ORM)\n- Payments: Dodo Payments (MoR)\n- AI/LLM: Gemini 2.5\n- Vector: pgvector`,
+                "docs-ai-guide-snippet"
+              )}
+              className="border border-outline-variant/40 bg-surface hover:bg-instructions-bg text-text-main px-4 py-2 rounded-xl font-bold text-xs flex items-center gap-2 transition-all cursor-pointer"
+            >
+              <span className="material-symbols-outlined text-base">
+                {copiedTextId === "docs-ai-guide-snippet" ? "done" : "content_copy"}
+              </span>
+              Copy Core Snippet
+            </button>
+          </div>
+        </div>
+
+        <div className="space-y-4">
+          <h3 className="text-sm font-bold text-text-main">AI Engine Integration Properties</h3>
+          <div className="grid gap-3 sm:grid-cols-2">
+            <div className="p-4 border border-outline-variant/30 bg-instructions-bg rounded-xl space-y-1">
+              <span className="text-[10px] font-bold text-accent-green-text tracking-wider uppercase">ReAct Reasoning Loop</span>
+              <p className="text-xs text-text-muted leading-relaxed">
+                Loops up to 10 times to let the LLM autonomously decide which carbon estimation and auditing tools to trigger sequentially.
+              </p>
+            </div>
+            <div className="p-4 border border-outline-variant/30 bg-instructions-bg rounded-xl space-y-1">
+              <span className="text-[10px] font-bold text-accent-green-text tracking-wider uppercase">Self-Healing Backend</span>
+              <p className="text-xs text-text-muted leading-relaxed">
+                If the AI triggers a database or tool exception, the backend catches it and feeds the raw log back to the LLM to rewrite parameters.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* SDK Tabs */}
+        <div className="space-y-4">
+          <h3 className="text-sm font-bold text-text-main">Advanced SDK Integrations</h3>
+          
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <h4 className="text-xs font-bold text-text-main">Python SDK v3 Usage:</h4>
+                <button
+                  onClick={() => onCopy(
+                    `from zerocarbon import ZeroCarbon, ActivityBuilder\n\nclient = ZeroCarbon(api_key="zc_live_...", environment="production")\nbuilder = ActivityBuilder(org_id="your_org")\n\nactivity = builder.electricity(\n    kwh=1500,\n    period="2026-02",\n    location={"country": "IN", "state": "MH"},\n    source={"type": "meter", "confidence": 0.95}\n)\n\nresult = client.activities.ingest([activity])\nprint(f"Confidence: {result['data']['activities'][0]['confidence']['overall']}%")`,
+                    "docs-sdk-py"
+                  )}
+                  className="p-1.5 rounded-lg border border-neutral-700 bg-[#161F1A] hover:bg-[#1E2B24] text-zinc-400 hover:text-zinc-200 transition-colors cursor-pointer shrink-0"
+                >
+                  <span className="material-symbols-outlined text-[16px]">
+                    {copiedTextId === "docs-sdk-py" ? "done" : "content_copy"}
+                  </span>
+                </button>
+              </div>
+              <pre className="text-xs font-mono p-4 bg-[#0A0E0C] text-zinc-100 border border-neutral-800 rounded-xl overflow-x-auto leading-relaxed select-all">
+                <span className="text-emerald-400">from</span> zerocarbon <span className="text-emerald-400">import</span> ZeroCarbon, ActivityBuilder<br />
+                <br />
+                client = <span className="text-teal-300">ZeroCarbon</span>(api_key=<span className="text-amber-200">"zc_live_..."</span>, environment=<span className="text-amber-200">"production"</span>)<br />
+                builder = <span className="text-teal-300">ActivityBuilder</span>(org_id=<span className="text-amber-200">"your_org"</span>)<br />
+                <br />
+                activity = builder.<span className="text-teal-300">electricity</span>(<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;kwh=<span className="text-amber-200">1500</span>,<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;period=<span className="text-amber-200">"2026-02"</span>,<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;location={"{"}<span className="text-teal-400">"country"</span>: <span className="text-amber-200">"IN"</span>, <span className="text-teal-400">"state"</span>: <span className="text-amber-200">"MH"</span>{"}"},<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;source={"{"}<span className="text-teal-400">"type"</span>: <span className="text-amber-200">"meter"</span>, <span className="text-teal-400">"confidence"</span>: <span className="text-amber-200">0.95</span>{"}"}<br />
+                )<br />
+                <br />
+                result = client.activities.<span className="text-teal-300">ingest</span>([activity])<br />
+                <span className="text-emerald-400">print</span>(f<span className="text-amber-200">{"\"Confidence: {result['data']['activities'][0]['confidence']['overall']}%\""}</span>)
+              </pre>
+            </div>
+
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <h4 className="text-xs font-bold text-text-main">Node.js SDK v3 Usage:</h4>
+                <button
+                  onClick={() => onCopy(
+                    `import { ZeroCarbon } from 'zerocarbon-nodejs-sdk';\n\nconst client = new ZeroCarbon({\n  apiKey: 'zc_live_...',\n  retryConfig: { maxRetries: 3, retryDelay: 1000 }\n});\n\nconst activity = client.activities.electricity({\n  kwh: 1500,\n  period: '2026-02',\n  location: { country: 'IN', state: 'MH' }\n});\n\nconst result = await client.activities.ingest({ activities: [activity] });`,
+                    "docs-sdk-node"
+                  )}
+                  className="p-1.5 rounded-lg border border-neutral-700 bg-[#161F1A] hover:bg-[#1E2B24] text-zinc-400 hover:text-zinc-200 transition-colors cursor-pointer shrink-0"
+                >
+                  <span className="material-symbols-outlined text-[16px]">
+                    {copiedTextId === "docs-sdk-node" ? "done" : "content_copy"}
+                  </span>
+                </button>
+              </div>
+              <pre className="text-xs font-mono p-4 bg-[#0A0E0C] text-zinc-100 border border-neutral-800 rounded-xl overflow-x-auto leading-relaxed select-all">
+                <span className="text-emerald-400">import</span> {`{ ZeroCarbon }`} <span className="text-emerald-400">from</span> <span className="text-amber-200">'zerocarbon-nodejs-sdk'</span>;<br />
+                <br />
+                <span className="text-emerald-400">const</span> client = <span className="text-emerald-400">new</span> <span className="text-teal-300">ZeroCarbon</span>({"{"}<br />
+                &nbsp;&nbsp;apiKey: <span className="text-amber-200">'zc_live_...'</span>,<br />
+                &nbsp;&nbsp;retryConfig: {"{ maxRetries: 3, retryDelay: 1000 }"}<br />
+                {"});"}<br />
+                <br />
+                <span className="text-emerald-400">const</span> activity = client.activities.<span className="text-teal-300">electricity</span>({"{"}<br />
+                &nbsp;&nbsp;kwh: <span className="text-amber-200">1500</span>,<br />
+                &nbsp;&nbsp;period: <span className="text-amber-200">'2026-02'</span>,<br />
+                &nbsp;&nbsp;location: {"{ country: 'IN', state: 'MH' }"}<br />
+                {"});"}<br />
+                <br />
+                <span className="text-emerald-400">const</span> result = <span className="text-emerald-400">await</span> client.activities.<span className="text-teal-300">ingest</span>({"{"} activities: [activity] {"}"});
+              </pre>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ---------------- SECTION 3.6: CANONICAL ACTIVITY MODEL ---------------- */}
+      <section id="canonical-model" className="scroll-mt-24 space-y-6">
+        <h2 className="font-display-md text-2xl font-bold tracking-tight text-text-main border-b border-neutral-100 dark:border-outline-variant/10 pb-2">
+          Canonical Activity Model
+        </h2>
+        <p className="font-body-md text-xs sm:text-sm text-text-muted leading-relaxed">
+          ZeroCarbon relies on a single canonical activity model. All carbon activities ingested across the organization are validated against this strict structure.
+        </p>
+
+        <div className="space-y-3">
+          <h3 className="text-sm font-bold text-text-main">Standardized Fields</h3>
+          <div className="border border-outline-variant/30 rounded-2xl overflow-hidden shadow-sm">
+            <div className="grid grid-cols-[1fr_2fr] gap-4 p-4 bg-instructions-bg border-b border-outline-variant/20 text-[10px] font-bold uppercase text-text-muted tracking-wide">
+              <div>Field Name</div>
+              <div>Type & Validation Description</div>
+            </div>
+            <div className="divide-y divide-outline-variant/10 text-xs leading-relaxed">
+              {[
+                { name: "activity_type", desc: "String (e.g. 'electricity', 'fuel', 'shipping'). Maps to standard emission categories." },
+                { name: "scope", desc: "Integer [1, 2, 3]. Automatically validated based on the activity type." },
+                { name: "quantity", desc: "Float. The actual magnitude of the activity (must be positive)." },
+                { name: "unit", desc: "String. Standardized measurement unit (e.g., 'kwh', 'liters', 'km', 'kg')." },
+                { name: "location", desc: "Object. Contains country and subdivision/state codes for regional grid factors." },
+                { name: "idempotency_key", desc: "SHA-256 string. Prevents duplicate ledger entries from bulk AI uploads." },
+              ].map((field) => (
+                <div key={field.name} className="grid grid-cols-[1fr_2fr] gap-4 p-4 text-text-muted">
+                  <div>
+                    <code className="font-mono text-accent-green-text font-bold">{field.name}</code>
+                  </div>
+                  <div>{field.desc}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ---------------- SECTION 3.7: CONFIDENCE SCORING SYSTEM ---------------- */}
+      <section id="confidence-scoring" className="scroll-mt-24 space-y-6">
+        <h2 className="font-display-md text-2xl font-bold tracking-tight text-text-main border-b border-neutral-100 dark:border-outline-variant/10 pb-2">
+          Confidence Scoring System
+        </h2>
+        <p className="font-body-md text-xs sm:text-sm text-text-muted leading-relaxed">
+          Every emission calculation is graded dynamically using a 5-factor weighted algorithm to quantify data reliability.
+        </p>
+
+        <div className="border border-outline-variant/30 rounded-2xl overflow-hidden shadow-sm">
+          <div className="grid grid-cols-[1.5fr_1fr_3.5fr] gap-4 p-4 bg-instructions-bg border-b border-outline-variant/20 text-[10px] font-bold uppercase text-text-muted tracking-wide">
+            <div>Factor</div>
+            <div>Weight</div>
+            <div>Scoring Protocol</div>
+          </div>
+          <div className="divide-y divide-outline-variant/10 text-xs leading-relaxed text-text-muted">
+            {[
+              { factor: "Source Quality", weight: "25%", desc: "Direct Utility Meter (95%) > Ingested API (90%) > Supplier Invoice (80%) > Manual Log (70%) > Regional Estimate (50%)" },
+              { factor: "Data Completeness", weight: "25%", desc: "Checks for non-empty optional parameters and rich context metadata variables." },
+              { factor: "Emission Factor Quality", weight: "20%", desc: "Regional factors mapped dynamically (e.g. eGRID) > national averages > global default conversion rates." },
+              { factor: "Temporal Accuracy", weight: "15%", desc: "Real-time automated sync > daily batch feeds > monthly utilities bills > annualized estimates." },
+              { factor: "Methodological Rigor", weight: "15%", desc: "Rigor calculated based on GHG Protocol Tiers (Tier 4 direct reporting down to Tier 1 emissions activity estimates)." },
+            ].map((row) => (
+              <div key={row.factor} className="grid grid-cols-[1.5fr_1fr_3.5fr] gap-4 p-4">
+                <div className="font-bold text-text-main">{row.factor}</div>
+                <div className="font-semibold text-accent-green-text">{row.weight}</div>
+                <div>{row.desc}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ---------------- SECTION 3.8: CARBON LEDGER & BOOKKEEPING ---------------- */}
+      <section id="carbon-ledger" className="scroll-mt-24 space-y-6">
+        <h2 className="font-display-md text-2xl font-bold tracking-tight text-text-main border-b border-neutral-100 dark:border-outline-variant/10 pb-2">
+          Carbon Ledger (Double-Entry Bookkeeping)
+        </h2>
+        <p className="font-body-md text-xs sm:text-sm text-text-muted leading-relaxed">
+          ZeroCarbon implements accounting-grade double-entry bookkeeping to track Scope 1, 2, and 3 activities. This ensures auditable balance checks for compliance reports.
+        </p>
+
+        <div className="grid gap-4 sm:grid-cols-3">
+          <div className="p-4 bg-step-bg border border-accent-green-text/10 rounded-xl space-y-1">
+            <h5 className="text-xs font-bold text-text-main">Audit Trail</h5>
+            <p className="text-[11px] text-text-muted leading-relaxed">
+              Every document uploaded or ingested logs the exact AI Agent or User ID responsible to generate tamper-proof reports.
+            </p>
+          </div>
+          <div className="p-4 bg-step-bg border border-accent-green-text/10 rounded-xl space-y-1">
+            <h5 className="text-xs font-bold text-text-main">RAG Vector Search</h5>
+            <p className="text-[11px] text-text-muted leading-relaxed">
+              Integrates Neon's `pgvector` index to semantically retrieve invoices, fuel receipts, and utility bills instantly during carbon audits.
+            </p>
+          </div>
+          <div className="p-4 bg-step-bg border border-accent-green-text/10 rounded-xl space-y-1">
+            <h5 className="text-xs font-bold text-text-main">Ledger Segregation</h5>
+            <p className="text-[11px] text-text-muted leading-relaxed">
+              Ledger transactions support segregation of emissions: `emission_add`, `emission_reduce`, `offset_purchase`, and `offset_retire`.
+            </p>
+          </div>
+        </div>
+      </section>
+
       {/* ---------------- SECTION 4: INGEST TELEMETRY ---------------- */}
       <section id="ingest-telemetry" className="scroll-mt-24 space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center gap-3 border-b border-neutral-100 dark:border-outline-variant/10 pb-2">
@@ -606,6 +842,40 @@ client = `}<span className="text-teal-300">ZeroCarbonClient</span>{`(
           <code className="text-xs text-neutral-800 dark:text-zinc-200 font-mono break-all select-all flex-1">
             https://api.zerocarbon.dev/v1/factors/query?region=US-EAST
           </code>
+        </div>
+      </section>
+
+      {/* ---------------- SECTION 5.5: CARBON OFFSET MARKETPLACE ---------------- */}
+      <section id="offset-marketplace" className="scroll-mt-24 space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-3 border-b border-neutral-100 dark:border-outline-variant/10 pb-2">
+          <span className="px-2.5 py-1 text-[10px] font-bold rounded bg-emerald-500/10 text-emerald-500 border border-emerald-500/10 flex items-center select-none uppercase tracking-wider self-start sm:self-center">
+            POST
+          </span>
+          <h2 className="font-display-md text-2xl font-bold tracking-tight text-text-main">
+            Carbon Offset Marketplace (Dodo MoR)
+          </h2>
+        </div>
+        
+        <p className="font-body-md text-xs sm:text-sm text-text-muted leading-relaxed">
+          ZeroCarbon features an offset marketplace powered by **Dodo Payments** as the Merchant of Record (MoR) to calculate base credit price + 3% fee, automatically handling localized taxes and VAT globally.
+        </p>
+
+        <div className="p-3.5 bg-code-inline-bg border border-outline-variant/20 rounded-xl flex items-center gap-2">
+          <code className="text-xs text-code-inline-text font-mono break-all select-all flex-1">
+            POST https://api.zerocarbon.dev/v1/marketplace/checkout
+          </code>
+        </div>
+
+        <div className="space-y-4">
+          <h4 className="text-xs font-bold text-text-main">Fulfillment Webhook Endpoint</h4>
+          <p className="text-xs text-text-muted leading-relaxed">
+            Successful checkouts trigger automated webhook fulfillments which generate compliant certificates:
+          </p>
+          <div className="p-3.5 bg-code-inline-bg border border-outline-variant/20 rounded-xl flex items-center gap-2">
+            <code className="text-xs text-code-inline-text font-mono break-all select-all flex-1">
+              POST https://api.zerocarbon.dev/v1/webhooks/dodo-payments
+            </code>
+          </div>
         </div>
       </section>
 
