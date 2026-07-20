@@ -12,7 +12,7 @@
   --color-tertiary-fixed: #ffdad9;
   --color-outline-variant: #c1c8c2;
   --color-secondary-fixed-dim: #b7ccb9;
-  --color-text-muted: #5C7066;
+  --color-text-muted: #3D4F45;
   --color-accent-green: #2E5C44;
   --color-on-surface: #1a1c1a;
   --color-error-container: #ffdad6;
@@ -119,7 +119,7 @@ html {
   --color-background: #F7FAF8;
   --color-off-white: #F7FAF8;
   --color-text-main: #12261C;
-  --color-text-muted: #5C7066;
+  --color-text-muted: #3D4F45;
   --color-primary: #032416;
   --color-on-primary: #ffffff;
   --color-surface-mint: #E9F2EA;
@@ -139,7 +139,7 @@ html.dark {
   --color-background: #0B0F0D;
   --color-off-white: #0B0F0D;
   --color-text-main: #f7faf8;
-  --color-text-muted: #859e91;
+  --color-text-muted: #ABC2B5;
   --color-primary: #22c55e;
   --color-on-primary: #0B0F0D;
   --color-surface-mint: #121c17;

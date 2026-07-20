@@ -55,7 +55,7 @@ export function LogoCloud() {
               loading="lazy"
               width="auto"
               height="auto"
-              className="select-none h-4 md:h-5 opacity-40 grayscale cursor-pointer
+              className="select-none h-4 md:h-5 opacity-65 dark:opacity-70 grayscale dark:invert cursor-pointer
                          hover:opacity-100 hover:grayscale-0
                          transition-all duration-400 ease-in-out"
             />

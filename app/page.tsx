@@ -1,6 +1,8 @@
 "use client";
 
 import { useRef, useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { useTheme } from "next-themes";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
@@ -45,9 +47,20 @@ if (typeof window !== "undefined") {
 }
 
 export default function Home() {
+  const { resolvedTheme } = useTheme();
+  const isDark = resolvedTheme === "dark";
   const containerRef = useRef<HTMLDivElement>(null);
   const leftColumnRef = useRef<HTMLDivElement>(null);
   const [leftColumnHeight, setLeftColumnHeight] = useState<number | null>(null);
+  const [isMcpModalOpen, setIsMcpModalOpen] = useState(false);
+  const [activeMcpTab, setActiveMcpTab] = useState("claude");
+  const [copiedText, setCopiedText] = useState<string | null>(null);
+
+  const handleCopy = (text: string, id: string) => {
+    navigator.clipboard.writeText(text);
+    setCopiedText(id);
+    setTimeout(() => setCopiedText(null), 2000);
+  };
 
   // Get lenis instance for programmatic scrollTo calls
   const lenis = useLenis();
@@ -438,9 +451,48 @@ export default function Home() {
                   Request a Demo
                   <span className="material-symbols-outlined text-base">arrow_forward</span>
                 </AnimatedButton>
-                <AnimatedButton variant="outline" className="px-8 py-3 rounded-full font-body-md text-body-md hero-animate pointer-events-auto text-sm" onClick={(e) => handleNavClick(e, '#signal-blocks')}>
-                  Explore Signals
-                </AnimatedButton>
+                <div onClick={() => setIsMcpModalOpen(true)} className="inline-flex items-center gap-1 bg-white dark:bg-surface-container border border-neutral-200 dark:border-outline-variant/15 rounded-full px-5 py-2.5 shadow-sm hover:shadow-md transition-all duration-300 hero-animate pointer-events-auto text-sm cursor-pointer group">
+                  <span className="font-body-md font-bold text-neutral-800 dark:text-text-main pr-1.5 select-none">
+                    Add to my AI
+                  </span>
+                  
+                  {/* Icons row */}
+                  <div className="flex items-center gap-1.5 border-l border-neutral-200 dark:border-outline-variant/20 pl-3 mr-1">
+                    {/* Claude/Anthropic (Orange Asterisk/Flower) */}
+                    <span className="hover:scale-110 transition-transform duration-200 flex items-center" title="Claude / Anthropic">
+                      <svg className="w-3.5 h-3.5 text-[#D97706]" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2a1 1 0 011 1v6.59l4.66-4.66a1 1 0 111.41 1.41L14.41 11H21a1 1 0 110 2h-6.59l4.66 4.66a1 1 0 01-1.41 1.41L13 14.41V21a1 1 0 11-2 0v-6.59l-4.66 4.66a1 1 0 01-1.41-1.41L9.59 13H3a1 1 0 110-2h6.59L4.93 6.34a1 1 0 011.41-1.41L11 9.59V3a1 1 0 011-1z" />
+                      </svg>
+                    </span>
+                    
+                    {/* Vercel (Black Triangle) */}
+                    <span className="hover:scale-110 transition-transform duration-200 flex items-center" title="Vercel">
+                      <svg className="w-3.5 h-3.5 text-black dark:text-white" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 1L24 22H0L12 1z" />
+                      </svg>
+                    </span>
+
+                    {/* OpenAI/ChatGPT (Green Spiral) */}
+                    <span className="hover:scale-110 transition-transform duration-200 flex items-center" title="OpenAI / ChatGPT">
+                      <svg className="w-3.5 h-3.5 text-[#10a37f]" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M21.7 10.9a5.5 5.5 0 00-.7-2.9 5.6 5.6 0 00-2.3-2.1c-.2-.1-.4-.2-.7-.2h-.2c0-.4-.1-.8-.3-1.1a5.6 5.6 0 00-3.6-3.1 5.3 5.3 0 00-3.5.2c-.3.1-.5.3-.7.5l-.2.1c-.2-.2-.5-.4-.8-.5a5.5 5.5 0 00-5.8 1.1 5.5 5.5 0 00-1.4 3.7c0 .1 0 .2.1.4l-.1.1a5.5 5.5 0 00-.8 3.5 5.5 5.5 0 002.3 4.1c.2.1.4.2.7.2.1.2.2.4.3.6a5.5 5.5 0 003.8 2.7 5.4 5.4 0 003.1-.3l.7-.4.2-.1c.2.2.5.4.8.5a5.5 5.5 0 005.8-1.1 5.5 5.5 0 001.4-3.7c0-.2 0-.3-.1-.5v-.1c.3.1.5.1.8.1a5.5 5.5 0 004-1.9 5.5 5.5 0 001.2-3.7z" />
+                      </svg>
+                    </span>
+
+                    {/* Robot head/Copilot (Gray) */}
+                    <span className="hover:scale-110 transition-transform duration-200 flex items-center" title="AI Agents / Copilot">
+                      <svg className="w-3.5 h-3.5 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M18 10h-1.25A4.75 4.75 0 0012 14.75v0A4.75 4.75 0 007.25 10H6a4 4 0 00-4 4v2a4 4 0 004 4h12a4 4 0 004-4v-2a4 4 0 00-4-4z" />
+                        <circle cx="12" cy="5" r="3" />
+                      </svg>
+                    </span>
+                  </div>
+
+                  {/* Dropdown Chevron */}
+                  <span className="material-symbols-outlined text-xs text-neutral-400 ml-1 transition-transform duration-200 group-hover:translate-y-0.5">
+                    expand_more
+                  </span>
+                </div>
               </div>
               <div className="grid gap-3 sm:grid-cols-3">
                 <div className="rounded-4xl border border-outline-variant/15 bg-surface/90 p-4 shadow-sm hero-animate">
@@ -907,6 +959,354 @@ export default function Home() {
           })
         }}
       />
+      {/* MCP Connect Modal */}
+      <AnimatePresence>
+        {isMcpModalOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsMcpModalOpen(false)}
+              className="absolute inset-0 bg-[#0B0F0D]/60 backdrop-blur-md"
+            />
+            
+            {/* Modal Body */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 10 }}
+              transition={{ type: "spring", duration: 0.4 }}
+              className="relative w-full max-w-4xl h-[650px] max-h-[85vh] bg-white/95 dark:bg-surface-container/95 border border-neutral-200/60 dark:border-outline-variant/15 rounded-3xl shadow-[0_32px_90px_rgba(0,0,0,0.15)] flex flex-col md:flex-row overflow-hidden z-10"
+            >
+              
+              {/* Left Column: Tabs List */}
+              <div className="w-full md:w-64 border-r border-neutral-200/50 dark:border-outline-variant/10 bg-neutral-50/50 dark:bg-[#121c17]/30 p-6 flex flex-col shrink-0">
+                <div className="mb-6">
+                  <h3 className="font-display-md text-base font-bold text-neutral-800 dark:text-text-main flex items-center gap-2">
+                    <svg className="w-5 h-5 text-accent-green" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 18a8 8 0 1 1 8-8 8 8 0 0 1-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z" />
+                    </svg>
+                    Connect to my AI
+                  </h3>
+                  <p className="text-[11px] text-text-muted mt-1 leading-normal">
+                    Add the ZeroCarbon MCP server to your AI tools in minutes.
+                  </p>
+                </div>
+                
+                {/* Tab Items */}
+                <div className="flex flex-col gap-1.5 overflow-y-auto flex-1">
+                  {[
+                    { id: "claude", label: "Claude (Desktop)", icon: "bolt" },
+                    { id: "claude-code", label: "Claude Code", icon: "terminal" },
+                    { id: "cursor", label: "Cursor", icon: "code" },
+                    { id: "chatgpt", label: "ChatGPT", icon: "forum" },
+                    { id: "manus", label: "Manus", icon: "smart_toy" },
+                    { id: "other", label: "Other", icon: "dns" },
+                  ].map((tab) => {
+                    const isActive = activeMcpTab === tab.id;
+                    return (
+                      <button
+                        key={tab.id}
+                        onClick={() => setActiveMcpTab(tab.id)}
+                        className={`flex items-center gap-3 px-4 py-3 rounded-xl cursor-pointer text-left font-body-md text-xs font-semibold transition-all duration-205 ${
+                          isActive
+                            ? "bg-accent-green text-white shadow-md shadow-accent-green/10"
+                            : "text-[#6B7280] dark:text-text-muted hover:bg-neutral-100 dark:hover:bg-surface-mint/10"
+                        }`}
+                      >
+                        <span className="material-symbols-outlined text-[18px]">
+                          {tab.icon}
+                        </span>
+                        {tab.label}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+              
+              {/* Right Column: Tab Content */}
+              <div className="flex-1 p-8 overflow-y-auto flex flex-col justify-between">
+                <div className="space-y-6">
+                  {/* Top row: Header + Close */}
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <h4 className="font-display-md text-lg font-bold text-neutral-800 dark:text-text-main capitalize">
+                        {activeMcpTab.replace("-", " ")} Setup
+                      </h4>
+                      <p className="text-xs text-text-muted mt-1">
+                        Follow these simple steps to link the ZeroCarbon MCP server.
+                      </p>
+                    </div>
+                    
+                    <button
+                      onClick={() => setIsMcpModalOpen(false)}
+                      className="p-1.5 rounded-full hover:bg-neutral-100 dark:hover:bg-surface-mint/15 text-neutral-400 hover:text-neutral-600 dark:hover:text-text-main transition-colors cursor-pointer"
+                    >
+                      <span className="material-symbols-outlined text-lg">close</span>
+                    </button>
+                  </div>
+                  
+                  {/* Instructions */}
+                  <div className="space-y-5">
+                    
+                    {/* Tab 1: Claude Desktop */}
+                    {activeMcpTab === "claude" && (
+                      <>
+                        <div className="space-y-2">
+                          <p className="text-xs font-bold text-neutral-800 dark:text-text-main">
+                            Step 1: Open Settings
+                          </p>
+                          <p className="text-xs text-text-muted">
+                            Open Claude (Desktop/Web) settings, navigate to <span className="font-semibold text-neutral-700 dark:text-text-main">Connectors</span>, and click <span className="font-semibold text-neutral-700 dark:text-text-main">"Add custom connector"</span>.
+                          </p>
+                        </div>
+                        
+                        <div className="space-y-2">
+                          <p className="text-xs font-bold text-neutral-800 dark:text-text-main">
+                            Step 2: Paste MCP Server URL
+                          </p>
+                          <div className="flex items-center gap-2 p-3 bg-neutral-50 dark:bg-surface-container-low border border-neutral-200 dark:border-outline-variant/15 rounded-xl">
+                            <code className="text-xs text-accent-green font-mono break-all flex-1">
+                              https://zerocarbon-mcp.vercel.app/api/mcp
+                            </code>
+                            <button
+                              onClick={() => handleCopy("https://zerocarbon-mcp.vercel.app/api/mcp", "url")}
+                              className="p-1.5 rounded-lg border border-neutral-200 hover:bg-neutral-100 dark:border-outline-variant/15 dark:hover:bg-surface-mint/15 transition-colors cursor-pointer shrink-0"
+                            >
+                              <span className="material-symbols-outlined text-[16px] text-neutral-500">
+                                {copiedText === "url" ? "done" : "content_copy"}
+                              </span>
+                            </button>
+                          </div>
+                        </div>
+
+                        <div className="space-y-2">
+                          <p className="text-xs font-bold text-neutral-800 dark:text-text-main">
+                            Step 3: Click "Authorize"
+                          </p>
+                          <p className="text-xs text-text-muted">
+                            Claude will authenticate and grant ZeroCarbon MCP server access to your workspace.
+                          </p>
+                        </div>
+                      </>
+                    )}
+
+                    {/* Tab 2: Claude Code */}
+                    {activeMcpTab === "claude-code" && (
+                      <>
+                        <div className="space-y-2">
+                          <p className="text-xs font-bold text-neutral-800 dark:text-text-main">
+                            Step 1: Add MCP Server
+                          </p>
+                          <p className="text-xs text-text-muted">
+                            Run the following command in any project directory to register the server:
+                          </p>
+                          <div className="flex items-center gap-2 p-3 bg-neutral-50 dark:bg-surface-container-low border border-neutral-200 dark:border-outline-variant/15 rounded-xl">
+                            <code className="text-xs text-accent-green font-mono break-all flex-1 select-all">
+                              claude mcp add --transport http https://zerocarbon-mcp.vercel.app/api/mcp
+                            </code>
+                            <button
+                              onClick={() => handleCopy("claude mcp add --transport http https://zerocarbon-mcp.vercel.app/api/mcp", "code")}
+                              className="p-1.5 rounded-lg border border-neutral-200 hover:bg-neutral-100 dark:border-outline-variant/15 dark:hover:bg-surface-mint/15 transition-colors cursor-pointer shrink-0"
+                            >
+                              <span className="material-symbols-outlined text-[16px] text-neutral-500">
+                                {copiedText === "code" ? "done" : "content_copy"}
+                              </span>
+                            </button>
+                          </div>
+                        </div>
+
+                        <div className="space-y-2">
+                          <p className="text-xs font-bold text-neutral-800 dark:text-text-main">
+                            Step 2: Verify Connection
+                          </p>
+                          <p className="text-xs text-text-muted">
+                            Confirm that the ZeroCarbon connector is active:
+                          </p>
+                          <div className="p-3 bg-neutral-50 dark:bg-surface-container-low border border-neutral-200 dark:border-outline-variant/15 rounded-xl">
+                            <code className="text-xs text-neutral-600 dark:text-text-muted font-mono">
+                              claude mcp list
+                            </code>
+                          </div>
+                        </div>
+                      </>
+                    )}
+
+                    {/* Tab 3: Cursor */}
+                    {activeMcpTab === "cursor" && (
+                      <>
+                        <div className="space-y-2">
+                          <p className="text-xs font-bold text-neutral-800 dark:text-text-main">
+                            Step 1: Open Features
+                          </p>
+                          <p className="text-xs text-text-muted">
+                            Go to Cursor Settings $\rightarrow$ Features $\rightarrow$ MCP, and click <span className="font-semibold text-neutral-700 dark:text-text-main">"Add new MCP server"</span>. Choose HTTP transport.
+                          </p>
+                        </div>
+                        
+                        <div className="space-y-2">
+                          <p className="text-xs font-bold text-neutral-800 dark:text-text-main">
+                            Step 2: Paste JSON Config block
+                          </p>
+                          <p className="text-xs text-text-muted">
+                            Or configure your global configuration file directly:
+                          </p>
+                          <div className="flex items-start gap-2 p-3 bg-neutral-50 dark:bg-surface-container-low border border-neutral-200 dark:border-outline-variant/15 rounded-xl">
+                            <pre className="text-xs text-accent-green font-mono break-all flex-1 select-all overflow-x-auto">
+{`{
+  "mcpServers": {
+    "zerocarbon": {
+      "url": "https://zerocarbon-mcp.vercel.app/api/mcp"
+    }
+  }
+}`}
+                            </pre>
+                            <button
+                              onClick={() => handleCopy(`{\n  "mcpServers": {\n    "zerocarbon": {\n      "url": "https://zerocarbon-mcp.vercel.app/api/mcp"\n    }\n  }\n}`, "json")}
+                              className="p-1.5 rounded-lg border border-neutral-200 hover:bg-neutral-100 dark:border-outline-variant/15 dark:hover:bg-surface-mint/15 transition-colors cursor-pointer shrink-0"
+                            >
+                              <span className="material-symbols-outlined text-[16px] text-neutral-500">
+                                {copiedText === "json" ? "done" : "content_copy"}
+                              </span>
+                            </button>
+                          </div>
+                        </div>
+                      </>
+                    )}
+
+                    {/* Tab 4: ChatGPT */}
+                    {activeMcpTab === "chatgpt" && (
+                      <>
+                        <div className="space-y-2">
+                          <p className="text-xs font-bold text-neutral-800 dark:text-text-main">
+                            Step 1: Open Connectors Settings
+                          </p>
+                          <p className="text-xs text-text-muted">
+                            Navigate to Settings $\rightarrow$ Connectors, and click <span className="font-semibold text-neutral-700 dark:text-text-main">"Add a custom connector"</span>.
+                          </p>
+                        </div>
+                        
+                        <div className="space-y-2">
+                          <p className="text-xs font-bold text-neutral-800 dark:text-text-main">
+                            Step 2: Paste URL
+                          </p>
+                          <div className="flex items-center gap-2 p-3 bg-neutral-50 dark:bg-surface-container-low border border-neutral-200 dark:border-outline-variant/15 rounded-xl">
+                            <code className="text-xs text-accent-green font-mono break-all flex-1">
+                              https://zerocarbon-mcp.vercel.app/api/mcp
+                            </code>
+                            <button
+                              onClick={() => handleCopy("https://zerocarbon-mcp.vercel.app/api/mcp", "url")}
+                              className="p-1.5 rounded-lg border border-neutral-200 hover:bg-neutral-100 dark:border-outline-variant/15 dark:hover:bg-surface-mint/15 transition-colors cursor-pointer shrink-0"
+                            >
+                              <span className="material-symbols-outlined text-[16px] text-neutral-500">
+                                {copiedText === "url" ? "done" : "content_copy"}
+                              </span>
+                            </button>
+                          </div>
+                        </div>
+                      </>
+                    )}
+
+                    {/* Tab 5: Manus */}
+                    {activeMcpTab === "manus" && (
+                      <>
+                        <div className="space-y-2">
+                          <p className="text-xs font-bold text-neutral-800 dark:text-text-main">
+                            Step 1: Open Tools settings
+                          </p>
+                          <p className="text-xs text-text-muted">
+                            Navigate to Manus settings $\rightarrow$ Tools $\rightarrow$ MCP Servers. Click <span className="font-semibold text-neutral-700 dark:text-text-main">"Add MCP Server"</span>.
+                          </p>
+                        </div>
+                        
+                        <div className="space-y-2">
+                          <p className="text-xs font-bold text-neutral-800 dark:text-text-main">
+                            Step 2: Enter HTTP Endpoint
+                          </p>
+                          <div className="flex items-center gap-2 p-3 bg-neutral-50 dark:bg-surface-container-low border border-neutral-200 dark:border-outline-variant/15 rounded-xl">
+                            <code className="text-xs text-accent-green font-mono break-all flex-1">
+                              https://zerocarbon-mcp.vercel.app/api/mcp
+                            </code>
+                            <button
+                              onClick={() => handleCopy("https://zerocarbon-mcp.vercel.app/api/mcp", "url")}
+                              className="p-1.5 rounded-lg border border-neutral-200 hover:bg-neutral-100 dark:border-outline-variant/15 dark:hover:bg-surface-mint/15 transition-colors cursor-pointer shrink-0"
+                            >
+                              <span className="material-symbols-outlined text-[16px] text-neutral-500">
+                                {copiedText === "url" ? "done" : "content_copy"}
+                              </span>
+                            </button>
+                          </div>
+                        </div>
+                      </>
+                    )}
+
+                    {/* Tab 6: Other */}
+                    {activeMcpTab === "other" && (
+                      <>
+                        <div className="space-y-2">
+                          <p className="text-xs font-bold text-neutral-800 dark:text-text-main">
+                            Server Endpoint URL
+                          </p>
+                          <div className="flex items-center gap-2 p-3 bg-neutral-50 dark:bg-surface-container-low border border-neutral-200 dark:border-outline-variant/15 rounded-xl">
+                            <code className="text-xs text-accent-green font-mono break-all flex-1">
+                              https://zerocarbon-mcp.vercel.app/api/mcp
+                            </code>
+                            <button
+                              onClick={() => handleCopy("https://zerocarbon-mcp.vercel.app/api/mcp", "url")}
+                              className="p-1.5 rounded-lg border border-neutral-200 hover:bg-neutral-100 dark:border-outline-variant/15 dark:hover:bg-surface-mint/15 transition-colors cursor-pointer shrink-0"
+                            >
+                              <span className="material-symbols-outlined text-[16px] text-neutral-500">
+                                {copiedText === "url" ? "done" : "content_copy"}
+                              </span>
+                            </button>
+                          </div>
+                        </div>
+                      </>
+                    )}
+
+                    {/* Discovery prompt (For all text-based clients) */}
+                    {activeMcpTab !== "other" && (
+                      <div className="space-y-2 mt-4 pt-4 border-t border-neutral-200/50 dark:border-outline-variant/10">
+                        <p className="text-xs font-bold text-neutral-800 dark:text-text-main flex items-center gap-1.5">
+                          <span className="material-symbols-outlined text-[16px] text-accent-green">
+                            chat_bubble
+                          </span>
+                          Ask to discover your new sustainability skills
+                        </p>
+                        <div className="flex items-start gap-2 p-3 bg-accent-green/5 border border-accent-green/10 rounded-xl">
+                          <p className="text-xs text-neutral-700 dark:text-text-muted italic flex-1 leading-relaxed">
+                            "I just connected the ZeroCarbon MCP server. List every sustainability skill it offers — for each one give the name and a one-line description, then ask which I want to start."
+                          </p>
+                          <button
+                            onClick={() => handleCopy("I just connected the ZeroCarbon MCP server. List every sustainability skill it offers — for each one give the name and a one-line description, then ask which I want to start.", "prompt")}
+                            className="p-1.5 rounded-lg border border-accent-green/20 bg-white dark:bg-surface-container hover:bg-accent-green/5 transition-colors cursor-pointer shrink-0"
+                          >
+                            <span className="material-symbols-outlined text-[16px] text-accent-green">
+                              {copiedText === "prompt" ? "done" : "content_copy"}
+                            </span>
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                    
+                  </div>
+                </div>
+                
+                {/* Footer disclaimer */}
+                <div className="text-[10px] text-text-muted pt-4 border-t border-neutral-200/50 dark:border-outline-variant/10 flex justify-between items-center">
+                  <span>ZeroCarbon MCP is standard-compliant & secured.</span>
+                  <a href="#developers" onClick={() => setIsMcpModalOpen(false)} className="text-accent-green font-semibold hover:underline">
+                    API Docs &rarr;
+                  </a>
+                </div>
+              </div>
+              
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

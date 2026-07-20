@@ -111,7 +111,7 @@ function AnimatedBeam({
 function WorkflowNode({ node, index }: { node: Node; index: number }) {
   return (
     <motion.div
-      className="flex items-center gap-2 px-4 py-3 min-w-[140px] rounded-xl bg-white border border-emerald-100 shadow-md text-slate-800 hover:border-emerald-300 hover:shadow-lg transition-all duration-300 group z-10 relative"
+      className="flex items-center gap-2 px-4 py-3 min-w-[140px] rounded-xl bg-white dark:bg-surface-container border border-emerald-100 dark:border-outline-variant/15 shadow-md text-slate-800 dark:text-text-main hover:border-emerald-300 hover:shadow-lg transition-all duration-300 group z-10 relative"
       initial={{ opacity: 0, x: -10 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{
@@ -123,7 +123,7 @@ function WorkflowNode({ node, index }: { node: Node; index: number }) {
       <span className="material-symbols-outlined text-[18px] text-emerald-600 shrink-0">
         {node.icon}
       </span>
-      <span className="text-xs font-medium text-slate-700 group-hover:text-slate-900 line-clamp-2">
+      <span className="text-xs font-medium text-slate-700 dark:text-text-muted group-hover:text-slate-900 dark:group-hover:text-text-main line-clamp-2">
         {node.label}
       </span>
     </motion.div>

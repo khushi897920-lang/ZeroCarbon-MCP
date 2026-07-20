@@ -19,14 +19,14 @@ const NavLink = ({
   label: string;
   onClick: (e: React.MouseEvent, href: string) => void;
 }) => (
-  <a 
+  <Link 
     href={href} 
     onClick={(e) => onClick(e, href)}
     className="group flex items-center gap-1.5 text-[13px] font-semibold font-body-md tracking-wide text-white/75 hover:text-white transition-colors whitespace-nowrap cursor-pointer"
   >
     <Icon className="w-3.5 h-3.5 opacity-70 group-hover:opacity-100 transition-opacity" />
     <span>{label}</span>
-  </a>
+  </Link>
 );
 
 export function NotchNavbar({ className, ...props }: React.HTMLAttributes<HTMLElement>) {
@@ -40,23 +40,28 @@ export function NotchNavbar({ className, ...props }: React.HTMLAttributes<HTMLEl
 
   // Smooth scroll handler
   const handleScroll = (e: React.MouseEvent, href: string) => {
-    e.preventDefault();
-    setIsMobileMenuOpen(false);
-    const element = document.querySelector(href);
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth" });
+    const targetId = href.includes("#") ? href.split("#")[1] : null;
+    if (targetId && typeof window !== "undefined" && window.location.pathname === "/") {
+      const element = document.getElementById(targetId);
+      if (element) {
+        e.preventDefault();
+        setIsMobileMenuOpen(false);
+        element.scrollIntoView({ behavior: "smooth" });
+      }
+    } else {
+      setIsMobileMenuOpen(false);
     }
   };
 
   // Navigation items configuration
   const items = {
     left: [
-      { label: "Home", href: "#hero", icon: Home },
-      { label: "Features", href: "#features", icon: Zap },
+      { label: "Home", href: "/#hero", icon: Home },
+      { label: "Features", href: "/#features", icon: Zap },
     ],
     right: [
-      { label: "Developers", href: "#developers", icon: Code },
-      { label: "FAQ", href: "#faq", icon: HelpCircle }
+      { label: "Developers", href: "/docs", icon: Code },
+      { label: "FAQ", href: "/#faq", icon: HelpCircle }
     ]
   };
 

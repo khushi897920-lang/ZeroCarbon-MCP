@@ -3,7 +3,7 @@
 import { motion, useReducedMotion } from "framer-motion";
 
 const NODE_CLASS =
-  "bg-white/80 backdrop-blur-xl border border-emerald-100 shadow-[0_8px_30px_rgb(0,0,0,0.06)] text-slate-800 rounded-xl px-4 py-3 flex items-center gap-3 z-10 font-medium text-sm";
+  "bg-white/80 dark:bg-surface-container/80 backdrop-blur-xl border border-emerald-100 dark:border-outline-variant/15 shadow-[0_8px_30px_rgb(0,0,0,0.06)] text-slate-800 dark:text-text-main rounded-xl px-4 py-3 flex items-center gap-3 z-10 font-medium text-sm";
 
 const CONNECTIONS = [
   {
@@ -98,10 +98,10 @@ function CoreNode({ reducedMotion }: { reducedMotion: boolean }) {
           </span>
         </div>
         <div>
-          <p className="font-semibold text-slate-800 leading-tight">
+          <p className="font-semibold text-slate-800 dark:text-text-main leading-tight">
             ZeroCarbon
           </p>
-          <p className="text-sm font-medium text-emerald-600">MCP Core</p>
+          <p className="text-sm font-medium text-emerald-600 dark:text-accent-green">MCP Core</p>
         </div>
       </div>
     </div>
