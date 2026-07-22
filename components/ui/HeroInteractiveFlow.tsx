@@ -477,6 +477,7 @@ export default function HeroInteractiveFlow({ containerHeight }: { containerHeig
                   <button 
                     onClick={handleClear} 
                     className="text-[10px] sm:text-xs text-accent-green font-semibold hover:underline cursor-pointer flex items-center gap-1.5"
+                    aria-label="Clear audit results"
                   >
                     Clear Audit
                   </button>

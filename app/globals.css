@@ -196,14 +196,39 @@ header svg line {
   stroke: rgba(255, 255, 255, 0.1) !important;
 }
 
+/* On mobile, all GSAP-animated elements must be visible by default.
+   GSAP uses autoAlpha: 0 (opacity:0 + visibility:hidden) as the from-state,
+   but on mobile we skip or defer animations. This ensures content is never
+   invisible on first paint for Lighthouse / real mobile users. */
+@media (max-width: 767px) {
+  .hero-animate,
+  .gsap-title,
+  .feature-card,
+  .pricing-card,
+  .brand-box,
+  .glass-card,
+  .stagger-item,
+  .code-line,
+  #contact,
+  #developers > div > div,
+  [id='platform-engine'] .group {
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: none !important;
+    clip-path: none !important;
+  }
+}
+
 /* Force navbar CTA button (Request a Demo) to retain its light mode styling in both themes */
-header button[class*="bg-surface-mint"] {
+header button[class*="bg-surface-mint"],
+header a[class*="bg-surface-mint"] {
   background-color: #E9F2EA !important;
   color: #032416 !important;
   border-color: rgba(46, 92, 68, 0.2) !important;
 }
 
-header button[class*="bg-surface-mint"] span {
+header button[class*="bg-surface-mint"] span,
+header a[class*="bg-surface-mint"] span {
   color: #032416 !important;
 }
 
@@ -249,11 +274,21 @@ body {
     filter: blur(18px);
     opacity: 1;
     z-index: -1;
-    animation: heroGlowDrift 25s ease-in-out infinite; /* Much slower animation */
-    /* Promote to GPU layer: this element animates every frame and is large.
-     * Without will-change, the browser repaints it on the main thread each frame. */
+    animation: heroGlowDrift 25s ease-in-out infinite;
     will-change: transform, opacity;
     backface-visibility: hidden;
+  }
+
+  /* Mobile: disable expensive blur + animation on ambient-hero to reduce paint cost */
+  @media (max-width: 767px) {
+    .organic-bg {
+      background-image: none;
+    }
+    .ambient-hero::before {
+      filter: blur(0px);
+      animation: none;
+      will-change: auto;
+    }
   }
 
   @keyframes heroGlowDrift {
@@ -717,5 +752,34 @@ body {
 
 
 .material-symbols-outlined {
+  font-family: 'Material Symbols Outlined', sans-serif;
   font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+/* Utility: hide scrollbar but keep scrollable */
+.scrollbar-none {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
+}
+.scrollbar-none::-webkit-scrollbar {
+  display: none; /* Chrome/Safari */
+}
+
+/* Utility: thin scrollbar */
+.scrollbar-thin {
+  scrollbar-width: thin;
+}
+
+/* Mobile Performance & GPU Optimization */
+@media (max-width: 768px) {
+  .blur-3xl, .blur-2xl, .blur-\[120px\], .blur-\[100px\] {
+    filter: blur(16px) !important;
+  }
+  .backdrop-blur-xl, .backdrop-blur-2xl, .backdrop-blur-3xl {
+    backdrop-filter: blur(6px) !important;
+    -webkit-backdrop-filter: blur(6px) !important;
+  }
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
 }

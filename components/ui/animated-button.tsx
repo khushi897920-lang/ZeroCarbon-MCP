@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { motion, MotionProps } from "framer-motion";
 
 type AnimatedButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> &
+  React.AnchorHTMLAttributes<HTMLAnchorElement> &
   MotionProps & {
     children?: React.ReactNode;
     as?: any;
@@ -23,7 +24,12 @@ const AnimatedButton: React.FC<AnimatedButtonProps> = ({
   variant = "solid",
   ...rest
 }) => {
-  const Component = (motion as any)[as] || motion.button;
+  const Component = React.useMemo(() => {
+    if (typeof as === "string") {
+      return (motion as any)[as] || motion.button;
+    }
+    return (motion as any).create ? (motion as any).create(as) : (motion as any)(as);
+  }, [as]);
   const [isHovered, setIsHovered] = useState(false);
 
   // Base styles depending on variant

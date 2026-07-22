@@ -1,22 +1,37 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Newsreader, Hanken_Grotesk } from "next/font/google";
 import "./globals.css";
 import ScrollProvider from "./ScrollProvider";
 
 import ThemeProvider from "./ThemeProvider";
 
-// Load Google Fonts using Next.js optimization
+// Mobile Viewport Configuration for Lighthouse SEO & Accessibility
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#f8faf8" },
+    { media: "(prefers-color-scheme: dark)", color: "#0b130e" },
+  ],
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+};
+
+// Load Google Fonts using Next.js optimization with font-display: swap
 const newsreader = Newsreader({
   subsets: ["latin"],
   variable: "--font-newsreader",
   display: "swap",
   style: ["normal", "italic"],
+  weight: ["400", "700"],
+  preload: true,
 });
 
 const hankenGrotesk = Hanken_Grotesk({
   subsets: ["latin"],
   variable: "--font-hanken-grotesk",
   display: "swap",
+  weight: ["400", "500", "600", "700"],
+  preload: true,
 });
 
 // Enterprise-grade SEO Metadata using Next.js Metadata API
@@ -81,6 +96,7 @@ export const metadata: Metadata = {
       "max-snippet": -1,
     },
   },
+  category: "Technology",
 };
 
 export default function RootLayout({
@@ -154,13 +170,22 @@ export default function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
-        {/* Preconnect to fonts gstatic to speed up external assets (Material Symbols) */}
+        {/* Preconnect to Google Fonts */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        
+        {/* Material Symbols — loaded with display=block for better compatibility */}
         <link 
-          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=block" 
-          rel="stylesheet" 
+          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=block" 
+          rel="stylesheet"
         />
+        
+        {/* DNS Prefetch for external resources */}
+        <link rel="dns-prefetch" href="https://lh3.googleusercontent.com" />
+        <link rel="dns-prefetch" href="https://svgl.app" />
+        
+        {/* Favicon with proper formats */}
+        <link rel="icon" href="/favicon.ico" sizes="any" />
       </head>
       <body className="bg-off-white text-text-main selection:bg-primary-fixed selection:text-on-primary-fixed overflow-x-hidden antialiased">
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>

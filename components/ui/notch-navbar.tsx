@@ -22,9 +22,9 @@ const NavLink = ({
   <Link 
     href={href} 
     onClick={(e) => onClick(e, href)}
-    className="group flex items-center gap-1.5 text-[13px] font-semibold font-body-md tracking-wide text-white/75 hover:text-white transition-colors whitespace-nowrap cursor-pointer"
+    className="group flex items-center gap-2 text-[13px] font-bold font-body-md tracking-wide text-white hover:text-emerald-400 transition-colors whitespace-nowrap cursor-pointer"
   >
-    <Icon className="w-3.5 h-3.5 opacity-70 group-hover:opacity-100 transition-opacity" />
+    <Icon className="w-4 h-4 opacity-95 group-hover:opacity-100 transition-opacity shrink-0" />
     <span>{label}</span>
   </Link>
 );
@@ -113,9 +113,10 @@ export function NotchNavbar({ className, ...props }: React.HTMLAttributes<HTMLEl
 
               {/* Mobile Menu Button (Left) */}
               <button 
-                className="md:hidden mb-1.5 p-1 text-white/70 hover:text-white transition-colors"
+                className="md:hidden mb-1 text-white hover:text-emerald-400 transition-colors flex items-center justify-center min-w-[44px] min-h-[44px]"
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                 aria-label="Toggle menu"
+                aria-expanded={isMobileMenuOpen}
               >
                 {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
               </button>
@@ -141,15 +142,16 @@ export function NotchNavbar({ className, ...props }: React.HTMLAttributes<HTMLEl
                 <div className="flex gap-4 pl-4 border-l border-white/10 shrink-0 items-center">
                   <button
                     onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
-                    className="p-1.5 rounded-full text-white/70 hover:text-white hover:bg-white/10 transition-colors cursor-pointer flex items-center justify-center"
-                    aria-label="Toggle theme"
+                    className="p-1.5 rounded-full text-white hover:text-emerald-400 hover:bg-white/10 transition-colors cursor-pointer flex items-center justify-center min-w-[44px] min-h-[44px]"
+                    aria-label="Toggle theme mode"
                   >
                     {mounted ? (resolvedTheme === "dark" ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />) : <div className="w-4 h-4" />}
                   </button>
                   <AnimatedButton 
+                    as={Link}
+                    href="/request-demo"
                     variant="secondary" 
                     className="px-4 py-1.5 text-xs rounded-full font-bold shadow-sm"
-                    onClick={(e) => handleScroll(e, '#contact')}
                   >
                     Request a Demo
                   </AnimatedButton>
@@ -159,9 +161,10 @@ export function NotchNavbar({ className, ...props }: React.HTMLAttributes<HTMLEl
               {/* Mobile Right Actions */}
               <div className="md:hidden flex items-center gap-2 mb-1">
                 <AnimatedButton 
+                  as={Link}
+                  href="/request-demo"
                   variant="secondary" 
                   className="px-3 py-1 text-[11px] rounded-full font-bold shadow-sm"
-                  onClick={(e) => handleScroll(e, '#contact')}
                 >
                   Demo
                 </AnimatedButton>
@@ -210,9 +213,9 @@ export function NotchNavbar({ className, ...props }: React.HTMLAttributes<HTMLEl
                    key={item.label} 
                    href={item.href}
                    onClick={(e) => handleScroll(e, item.href)}
-                   className="flex items-center gap-3 p-3 rounded-lg hover:bg-white/5 transition-colors text-white/80 hover:text-white"
+                   className="group flex items-center gap-3 p-3 rounded-lg hover:bg-white/5 transition-colors text-white/90 hover:text-white"
                  >
-                   <item.icon className="w-5 h-5 opacity-70" />
+                   <item.icon className="w-4 h-4 opacity-85 group-hover:opacity-100 transition-opacity" />
                    <span className="font-body-md font-semibold text-[14px]">{item.label}</span>
                  </a>
                ))}
@@ -224,7 +227,7 @@ export function NotchNavbar({ className, ...props }: React.HTMLAttributes<HTMLEl
                  }}
                  className="flex items-center gap-3 p-3 rounded-lg hover:bg-white/5 transition-colors text-white/80 hover:text-white w-full text-left cursor-pointer"
                >
-                 {mounted ? (resolvedTheme === "dark" ? <Sun className="w-5 h-5 opacity-70" /> : <Moon className="w-5 h-5 opacity-70" />) : <div className="w-5 h-5" />}
+                 {mounted ? (resolvedTheme === "dark" ? <Sun className="w-5 h-5 opacity-90" /> : <Moon className="w-5 h-5 opacity-90" />) : <div className="w-5 h-5" />}
                  <span className="font-body-md font-semibold text-[14px]">
                    {resolvedTheme === "dark" ? "Light Mode" : "Dark Mode"}
                  </span>
