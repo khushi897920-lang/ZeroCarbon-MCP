@@ -73,7 +73,7 @@ function GlassNode({
 }) {
   return (
     <div className={`${NODE_CLASS} ${className}`}>
-      <span className="material-symbols-outlined text-emerald-500 text-[20px] shrink-0">
+      <span className="material-symbols-outlined text-accent-green text-[20px] shrink-0">
         {icon}
       </span>
       <span>{label}</span>
@@ -85,7 +85,7 @@ function CoreNode({ reducedMotion }: { reducedMotion: boolean }) {
   return (
     <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
       <div
-        className={`absolute -inset-6 bg-emerald-400 blur-2xl opacity-20 rounded-full -z-10 ${
+        className={`absolute -inset-6 bg-accent-green blur-2xl opacity-20 rounded-full -z-10 ${
           reducedMotion ? "" : "animate-pulse"
         }`}
       />
@@ -101,7 +101,7 @@ function CoreNode({ reducedMotion }: { reducedMotion: boolean }) {
           <p className="font-semibold text-slate-800 dark:text-text-main leading-tight">
             ZeroCarbon
           </p>
-          <p className="text-sm font-medium text-emerald-600 dark:text-accent-green">MCP Core</p>
+          <p className="text-sm font-medium text-accent-green-text">MCP Core</p>
         </div>
       </div>
     </div>

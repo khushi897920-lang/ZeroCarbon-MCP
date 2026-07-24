@@ -24,10 +24,10 @@ function CodeBlock({
   return (
     <div className="rounded-2xl border border-neutral-800 overflow-hidden shadow-sm bg-[#0B0F0D]">
       <div className="flex items-center justify-between px-4 py-2.5 bg-[#121815] border-b border-neutral-800 select-none">
-        <span className="text-xs font-bold uppercase text-zinc-300">{language}</span>
+        <span className="text-xs font-bold uppercase text-zinc-300 dark:text-text-muted">{language}</span>
         <button
           onClick={() => onCopy(code, copyId)}
-          className="p-1.5 rounded-lg border border-neutral-700 bg-[#161F1A] hover:bg-[#1E2B24] text-zinc-400 hover:text-zinc-200 transition-colors cursor-pointer shrink-0"
+          className="p-1.5 rounded-lg border border-neutral-700 bg-[#161F1A] hover:bg-[#1E2B24] text-zinc-400 dark:text-text-muted hover:text-zinc-200 dark:hover:text-text-main transition-colors cursor-pointer shrink-0"
         >
           <span className="material-symbols-outlined text-[16px]">
             {copiedTextId === copyId ? "done" : "content_copy"}
@@ -35,7 +35,7 @@ function CodeBlock({
         </button>
       </div>
       <div className="p-5 overflow-x-auto bg-[#0A0E0C]">
-        <pre className="font-mono text-xs text-emerald-400 leading-relaxed whitespace-pre">{code}</pre>
+        <pre className="font-mono text-xs text-accent-green-text leading-relaxed whitespace-pre">{code}</pre>
       </div>
     </div>
   );
@@ -183,7 +183,7 @@ export function DocsContent({
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                 {[
                   { rating: "Excellent (≥85%)", color: "bg-accent-green/15 text-accent-green-text" },
-                  { rating: "Good (70–84%)", color: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400" },
+                  { rating: "Good (70–84%)", color: "bg-accent-green/10 text-accent-green-text" },
                   { rating: "Fair (55–69%)", color: "bg-amber-500/10 text-amber-600 dark:text-amber-400" },
                   { rating: "Poor (<55%)", color: "bg-red-500/10 text-red-600 dark:text-red-400" },
                 ].map((r) => (
@@ -848,7 +848,7 @@ print(f"🔗 Activity ID: {result['activity_id']}")`}
                     </td>
                     <td className="px-5 py-3.5">
                       <span className={`inline-flex px-2 py-0.5 text-[9.5px] font-extrabold rounded-full uppercase tracking-wider ${
-                        scope === "Write" ? "bg-indigo-500/10 text-indigo-700 dark:text-indigo-400 border border-indigo-500/15" : "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/15"
+                        scope === "Write" ? "bg-indigo-500/10 text-indigo-700 dark:text-indigo-400 border border-indigo-500/15" : "bg-accent-green/10 text-accent-green-text border border-accent-green/15"
                       }`}>{scope}</span>
                     </td>
                     <td className="px-5 py-3.5 text-text-muted leading-relaxed">{desc}</td>
@@ -1670,7 +1670,7 @@ const data = await response.json();`}
                       <td className="px-5 py-3.5 text-xs text-text-muted">{row.type}</td>
                       <td className="px-5 py-3.5">
                         {row.required ? (
-                          <span className="text-[11px] font-bold text-green-600 dark:text-green-400">✅</span>
+                          <span className="text-[11px] font-bold text-accent-green-text">✅</span>
                         ) : (
                           <span className="text-xs text-text-muted">No</span>
                         )}
@@ -2086,7 +2086,7 @@ const data = await response.json();`}
               {[
                 { f: "Source Quality", w: "25%", chips: [["Meter", "95%"], ["API", "90%"], ["Supplier", "80%"], ["Manual", "70%"], ["Estimate", "50%"]], chipColor: "bg-indigo-500/10 text-indigo-700 dark:text-indigo-400 border-indigo-500/15" },
                 { f: "Data Completeness", w: "25%", chips: [["Required fields populated", "—"], ["Metadata richness", "—"]], chipColor: "bg-violet-500/10 text-violet-700 dark:text-violet-400 border-violet-500/15" },
-                { f: "Emission Factor Quality", w: "20%", chips: [["Region-specific", "95%"], ["National", "80%"], ["Global defaults", "60%"]], chipColor: "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/15" },
+                { f: "Emission Factor Quality", w: "20%", chips: [["Region-specific", "95%"], ["National", "80%"], ["Global defaults", "60%"]], chipColor: "bg-accent-green/10 text-accent-green-text border-accent-green/15" },
                 { f: "Temporal Accuracy", w: "15%", chips: [["Real-time", "98%"], ["Daily", "90%"], ["Monthly", "75%"], ["Annual", "55%"]], chipColor: "bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-500/15" },
                 { f: "Methodological Rigor", w: "15%", chips: [["Tier 4", "98%"], ["Tier 3", "88%"], ["Tier 2", "72%"], ["Tier 1", "55%"]], chipColor: "bg-cyan-500/10 text-cyan-700 dark:text-cyan-400 border-cyan-500/15" },
               ].map((row, i) => (
@@ -2218,10 +2218,10 @@ const data = await response.json();`}
             </div>
             <div className="p-4 rounded-xl bg-white dark:bg-neutral-800 border border-[#00875A]/15 text-center space-y-2 font-mono text-xs sm:text-sm">
               <div className="flex items-center justify-center gap-1 sm:gap-2 flex-wrap">
-                <span className="font-extrabold text-slate-500">balance_before</span>
-                <span className="text-slate-400">+</span>
+                <span className="font-extrabold text-slate-500 dark:text-text-muted">balance_before</span>
+                <span className="text-slate-400 dark:text-text-muted">+</span>
                 <span className="font-extrabold text-indigo-600 dark:text-indigo-300">transaction_amount</span>
-                <span className="text-slate-400">=</span>
+                <span className="text-slate-400 dark:text-text-muted">=</span>
                 <span className="font-extrabold text-[#00875A] dark:text-accent-green-text">balance_after</span>
               </div>
             </div>
@@ -4047,7 +4047,7 @@ const result = await client.activities.ingest({ activities: [activity] });`}
               };
               const methodColors: Record<string, string> = {
                 POST: "bg-indigo-500/10 text-indigo-700 dark:text-indigo-400 border border-indigo-500/15",
-                GET: "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/15",
+                GET: "bg-accent-green/10 text-accent-green-text border border-accent-green/15",
               };
               return (
                 <div
@@ -4233,7 +4233,7 @@ const result = await client.activities.ingest({ activities: [activity] });`}
               {
                 name: "OffsetCertificate & CarbonCreditRetirement",
                 tag: "Ledgers",
-                tagColor: "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/15",
+                tagColor: "bg-accent-green/10 text-accent-green-text border border-accent-green/15",
                 desc: "Ledgers generated when a user purchases offsets. Must contain strict attributes like valid_from and total_cost.",
               },
             ].map((t, i) => (

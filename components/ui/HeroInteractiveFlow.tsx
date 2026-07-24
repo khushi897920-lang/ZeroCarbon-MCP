@@ -25,7 +25,7 @@ const MOCK_AGENT_DATA: Record<string, AgentResponse> = {
     query: "Calculate CBAM carbon price exposure for Q3 steel imports.",
     responseTitle: "EU CBAM Exposure Audit (Q3)",
     metrics: [
-      { label: "Import Volume", value: "14,250 tonnes", trend: "Steel & Al", trendColor: "text-[#6B7280]" },
+      { label: "Import Volume", value: "14,250 tonnes", trend: "Steel & Al", trendColor: "text-text-muted" },
       { label: "Embedded Carbon", value: "26,362 tCO2e", trend: "+4.2% QoQ", trendColor: "text-red-600" },
       { label: "Certificate Cost", value: "€1,845,340", trend: "Est. @ €90/t", trendColor: "text-accent-green" }
     ],
@@ -37,7 +37,7 @@ const MOCK_AGENT_DATA: Record<string, AgentResponse> = {
     responseTitle: "GHG Protocol Corporate Footprint",
     metrics: [
       { label: "Scope 1 (Direct)", value: "2,450 tCO2e", trend: "-2.1% YoY", trendColor: "text-accent-green" },
-      { label: "Scope 2 (Indirect)", value: "4,120 tCO2e", trend: "Grid Intensity", trendColor: "text-[#6B7280]" },
+      { label: "Scope 2 (Indirect)", value: "4,120 tCO2e", trend: "Grid Intensity", trendColor: "text-text-muted" },
       { label: "Scope 3 (Value Chain)", value: "18,920 tCO2e", trend: "+12.4% YoY", trendColor: "text-red-600" }
     ],
     summaryText: "Footprint audit complete. Scope 3 transport logistics remains the primary emissions driver, accounting for 74.2% of corporate footprint."
@@ -47,7 +47,7 @@ const MOCK_AGENT_DATA: Record<string, AgentResponse> = {
     responseTitle: "CDP Climate Disclosure Gap Audit",
     metrics: [
       { label: "Target Grade", value: "A (Leadership)", trend: "Current: A-", trendColor: "text-accent-green" },
-      { label: "Section Completion", value: "88%", trend: "11/13 Completed", trendColor: "text-[#6B7280]" },
+      { label: "Section Completion", value: "88%", trend: "11/13 Completed", trendColor: "text-text-muted" },
       { label: "Primary Risk", value: "Water Stress", trend: "Scope 3 Supply", trendColor: "text-red-600" }
     ],
     summaryText: "To reach A grade, expand disclosure section C4.2 (Targets) with science-based net-zero trajectories aligned with 1.5°C limits."
@@ -77,7 +77,7 @@ const MOCK_AGENT_DATA: Record<string, AgentResponse> = {
     query: "Calculate EU Taxonomy Alignment for capital expenditures.",
     responseTitle: "EU Taxonomy Capex Alignment",
     metrics: [
-      { label: "Taxonomy Eligible", value: "72.4%", trend: "€42.4M Capex", trendColor: "text-[#6B7280]" },
+      { label: "Taxonomy Eligible", value: "72.4%", trend: "€42.4M Capex", trendColor: "text-text-muted" },
       { label: "Taxonomy Aligned", value: "48.2%", trend: "DNSH Verified", trendColor: "text-accent-green" },
       { label: "Alignment Gap", value: "24.2%", trend: "Contrib. Check", trendColor: "text-red-600" }
     ],
@@ -87,7 +87,7 @@ const MOCK_AGENT_DATA: Record<string, AgentResponse> = {
     query: "Generate cradle-to-grave Lifecycle Assessment for hardware.",
     responseTitle: "LCA Lifecycle Audit: MCP Hub v4",
     metrics: [
-      { label: "Lifecycle Impact", value: "46.2 kgCO2e", trend: "Cradle-to-Grave", trendColor: "text-[#6B7280]" },
+      { label: "Lifecycle Impact", value: "46.2 kgCO2e", trend: "Cradle-to-Grave", trendColor: "text-text-muted" },
       { label: "Manufacturing", value: "78.4%", trend: "Semiconductors", trendColor: "text-red-600" },
       { label: "Recyclability", value: "92.1%", trend: "Circular Design", trendColor: "text-accent-green" }
     ],
@@ -108,7 +108,7 @@ const MOCK_AGENT_DATA: Record<string, AgentResponse> = {
     responseTitle: "Bill of Lading Telemetry Extraction",
     metrics: [
       { label: "Parsed Documents", value: "142 Bills", trend: "OCR Clean", trendColor: "text-accent-green" },
-      { label: "Gross Weight", value: "8,940 tonnes", trend: "Verified Gross", trendColor: "text-[#6B7280]" },
+      { label: "Gross Weight", value: "8,940 tonnes", trend: "Verified Gross", trendColor: "text-text-muted" },
       { label: "Logistics Carbon", value: "412 tCO2e", trend: "EcoTransit API", trendColor: "text-accent-green" }
     ],
     summaryText: "Extracted cargo weights and port-pairs from shipping PDFs. Mapped cargo parameters to compute logistics carbon loads."
@@ -119,7 +119,7 @@ const MOCK_AGENT_DATA: Record<string, AgentResponse> = {
     metrics: [
       { label: "Target Reduction", value: "-46% by 2030", trend: "SBTi Approved", trendColor: "text-accent-green" },
       { label: "Current Progress", value: "-22.4%", trend: "On Trajectory", trendColor: "text-accent-green" },
-      { label: "Offset Credit Use", value: "0.0%", trend: "Direct Only", trendColor: "text-[#6B7280]" }
+      { label: "Offset Credit Use", value: "0.0%", trend: "Direct Only", trendColor: "text-text-muted" }
     ],
     summaryText: "SBTi target trajectory audit complete. Current annual reduction rate is 4.8%, aligning with the 1.5°C net-zero pathway."
   },
@@ -401,10 +401,10 @@ export default function HeroInteractiveFlow({ containerHeight }: { containerHeig
             <span className="absolute -inset-0.5 rounded-xl border border-accent-green/10 animate-pulse" />
           </div>
           <div>
-            <h3 className="font-display-md text-[14px] sm:text-[15.5px] font-bold text-[#1A1A1A] dark:text-text-main leading-tight">
+            <h3 className="font-display-md text-[14px] sm:text-[15.5px] font-bold text-text-main leading-tight">
               ZeroCarbon AI
             </h3>
-            <p className="font-body-md text-[10.5px] sm:text-xs text-[#6B7280] dark:text-text-muted tracking-wide font-medium">
+            <p className="font-body-md text-[10.5px] sm:text-xs text-text-muted tracking-wide font-medium">
               Carbon Agent
             </p>
           </div>
@@ -442,10 +442,10 @@ export default function HeroInteractiveFlow({ containerHeight }: { containerHeig
                 <span className="absolute -inset-2 rounded-full border border-accent-green/10 animate-ping" />
               </div>
               <div>
-                <p className="font-body-md text-xs sm:text-sm font-semibold text-[#1A1A1A]">
+                <p className="font-body-md text-xs sm:text-sm font-semibold text-text-main">
                   Auditing emissions datasets...
                 </p>
-                <p className="font-body-md text-[10px] sm:text-xs text-[#6B7280] mt-1">
+                <p className="font-body-md text-[10px] sm:text-xs text-text-muted mt-1">
                   Querying database parameters
                 </p>
               </div>
@@ -468,7 +468,7 @@ export default function HeroInteractiveFlow({ containerHeight }: { containerHeig
                   className="flex items-center justify-between border-b pb-3 mb-3.5"
                   style={{ borderColor: isDark ? "rgba(255, 255, 255, 0.06)" : "rgba(220, 220, 220, 0.4)" }}
                 >
-                  <h4 className="font-display-md text-xs sm:text-sm font-bold text-[#1A1A1A] dark:text-text-main flex items-center gap-1.5">
+                  <h4 className="font-display-md text-xs sm:text-sm font-bold text-text-main flex items-center gap-1.5">
                     <svg className="w-4.5 h-4.5 text-accent-green" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                       <path d="M9 12l2 2 4-4M7.8 21H16.2C19.5 21 21 19.5 21 16.2V7.8C21 4.5 19.5 3 16.2 3H7.8C4.5 3 3 4.5 3 7.8V16.2C3 19.5 4.5 21 7.8 21Z" />
                     </svg>
@@ -491,10 +491,10 @@ export default function HeroInteractiveFlow({ containerHeight }: { containerHeig
                       className="p-2.5 sm:p-3 rounded-xl border bg-[#F5F5F5] dark:bg-surface-container-low/40 shadow-sm"
                       style={{ borderColor: isDark ? "rgba(255, 255, 255, 0.05)" : "rgba(220, 220, 220, 0.5)" }}
                     >
-                      <p className="text-[9px] sm:text-[10px] text-[#6B7280] dark:text-text-muted tracking-wider truncate uppercase font-semibold">
+                      <p className="text-[9px] sm:text-[10px] text-text-muted tracking-wider truncate uppercase font-semibold">
                         {metric.label}
                       </p>
-                      <p className="mt-1.5 text-xs sm:text-sm font-bold text-[#1A1A1A] dark:text-text-main truncate">
+                      <p className="mt-1.5 text-xs sm:text-sm font-bold text-text-main truncate">
                         {metric.value}
                       </p>
                       {metric.trend && (
@@ -514,7 +514,7 @@ export default function HeroInteractiveFlow({ containerHeight }: { containerHeig
                 )}
 
                 {/* Summary Audit Explanation */}
-                <p className="text-[11px] sm:text-xs text-[#6B7280] dark:text-text-muted leading-relaxed font-body-md">
+                <p className="text-[11px] sm:text-xs text-text-muted leading-relaxed font-body-md">
                   {selectedResponse.summaryText}
                 </p>
 
@@ -524,7 +524,7 @@ export default function HeroInteractiveFlow({ containerHeight }: { containerHeig
                   style={{ borderColor: isDark ? "rgba(255, 255, 255, 0.06)" : "rgba(220, 220, 220, 0.4)" }}
                 >
                   <button 
-                    className="px-3 py-1.5 rounded-lg border text-[9px] sm:text-[10px] font-bold text-[#6B7280] dark:text-text-muted bg-white/70 dark:bg-surface-container-low/60 hover:bg-neutral-50 dark:hover:bg-surface-mint/15 transition-colors cursor-pointer"
+                    className="px-3 py-1.5 rounded-lg border text-[9px] sm:text-[10px] font-bold text-text-muted bg-white/70 dark:bg-surface-container-low/60 hover:bg-neutral-50 dark:hover:bg-surface-mint/15 transition-colors cursor-pointer"
                     style={{ borderColor: isDark ? "rgba(255, 255, 255, 0.1)" : "rgba(220, 220, 220, 0.7)" }}
                   >
                     Export Audit E1 PDF
@@ -551,7 +551,7 @@ export default function HeroInteractiveFlow({ containerHeight }: { containerHeig
                 </span>
               </div>
 
-              <p className="font-body-md text-[11.5px] sm:text-[12px] text-[#6B7280] dark:text-text-muted max-w-sm mb-5 leading-relaxed text-left">
+              <p className="font-body-md text-[11.5px] sm:text-[12px] text-text-muted max-w-sm mb-5 leading-relaxed text-left">
                 Audit emissions footprints, calculate logistics carbon factors, or draft CSRD/CBAM declarations.
               </p>
 
@@ -564,10 +564,10 @@ export default function HeroInteractiveFlow({ containerHeight }: { containerHeig
                     className="p-3 rounded-xl border bg-[#FAFAFA] dark:bg-surface-container-low/40 text-left transition-all duration-250 cursor-pointer group flex flex-col justify-between min-h-[76px] hover:bg-white dark:hover:bg-surface-mint/10 hover:border-accent-green hover:shadow-[0_8px_30px_rgba(15,23,42,0.05)] hover:-translate-y-[3px]"
                     style={{ borderColor: isDark ? "rgba(255, 255, 255, 0.08)" : "rgba(220, 220, 220, 0.7)" }}
                   >
-                    <span className="text-[#1A1A1A] dark:text-text-main font-body-md text-[11px] font-bold leading-normal">
+                    <span className="text-text-main font-body-md text-[11px] font-bold leading-normal">
                       {card.label}
                     </span>
-                    <span className="text-[9px] text-[#6B7280] dark:text-text-muted font-body-md mt-1.5 flex items-center gap-1 group-hover:text-accent-green transition-colors">
+                    <span className="text-[9px] text-text-muted font-body-md mt-1.5 flex items-center gap-1 group-hover:text-accent-green transition-colors">
                       Run Audit &rarr;
                     </span>
                   </button>
@@ -605,7 +605,7 @@ export default function HeroInteractiveFlow({ containerHeight }: { containerHeig
               }
             }}
             placeholder="Ask anything about your carbon data, compliance, or sustainability strategy..."
-            className="w-full bg-transparent outline-none resize-none font-body-md text-xs sm:text-sm text-[#1A1A1A] placeholder-[#9CA3AF] pr-2 focus:outline-none leading-relaxed align-middle"
+            className="w-full bg-transparent outline-none resize-none font-body-md text-xs sm:text-sm text-text-main placeholder-[#9CA3AF] pr-2 focus:outline-none leading-relaxed align-middle"
           />
 
           {/* Blink caret simulation inside input when focused and empty */}
@@ -648,7 +648,7 @@ export default function HeroInteractiveFlow({ containerHeight }: { containerHeig
                   whileTap={{ scale: 0.98 }}
                   className={`px-3.5 py-1.5 rounded-full border flex items-center gap-1.5 cursor-pointer shadow-sm select-none text-[10.5px] sm:text-xs font-semibold tracking-wide transition-all duration-250 ${activeQuery === chip.id
                     ? "bg-accent-green text-white border-transparent font-bold z-15"
-                    : "bg-[#F8F8F8] dark:bg-surface-container-low/40 border-neutral-200 dark:border-outline-variant/15 text-[#6B7280] dark:text-text-muted hover:shadow-[0_4px_12px_rgba(22,101,52,0.02)] hover:bg-[#22c55e]/6 hover:text-accent-green hover:border-accent-green"
+                    : "bg-[#F8F8F8] dark:bg-surface-container-low/40 border-neutral-200 dark:border-outline-variant/15 text-text-muted hover:shadow-[0_4px_12px_rgba(22,101,52,0.02)] hover:bg-[#22c55e]/6 hover:text-accent-green hover:border-accent-green"
                     }`}
                 >
                   {/* Dynamic SVG chip icon */}

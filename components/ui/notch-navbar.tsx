@@ -22,7 +22,7 @@ const NavLink = ({
   <Link 
     href={href} 
     onClick={(e) => onClick(e, href)}
-    className="group flex items-center gap-2 text-[13px] font-bold font-body-md tracking-wide text-white hover:text-emerald-400 transition-colors whitespace-nowrap cursor-pointer"
+    className="group flex items-center gap-2 text-[13px] font-bold font-body-md tracking-wide text-white hover:text-accent-green-text transition-colors whitespace-nowrap cursor-pointer"
   >
     <Icon className="w-4 h-4 opacity-95 group-hover:opacity-100 transition-opacity shrink-0" />
     <span>{label}</span>
@@ -113,7 +113,7 @@ export function NotchNavbar({ className, ...props }: React.HTMLAttributes<HTMLEl
 
               {/* Mobile Menu Button (Left) */}
               <button 
-                className="md:hidden mb-1 text-white hover:text-emerald-400 transition-colors flex items-center justify-center min-w-[44px] min-h-[44px]"
+                className="md:hidden mb-1 text-white hover:text-accent-green-text transition-colors flex items-center justify-center min-w-[44px] min-h-[44px]"
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                 aria-label="Toggle menu"
                 aria-expanded={isMobileMenuOpen}
@@ -142,7 +142,7 @@ export function NotchNavbar({ className, ...props }: React.HTMLAttributes<HTMLEl
                 <div className="flex gap-4 pl-4 border-l border-white/10 shrink-0 items-center">
                   <button
                     onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
-                    className="p-1.5 rounded-full text-white hover:text-emerald-400 hover:bg-white/10 transition-colors cursor-pointer flex items-center justify-center min-w-[44px] min-h-[44px]"
+                    className="p-1.5 rounded-full text-white hover:text-accent-green-text hover:bg-white/10 transition-colors cursor-pointer flex items-center justify-center min-w-[44px] min-h-[44px]"
                     aria-label="Toggle theme mode"
                   >
                     {mounted ? (resolvedTheme === "dark" ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />) : <div className="w-4 h-4" />}

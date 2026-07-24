@@ -74,7 +74,7 @@ const integrations: IntegrationInfo[] = [
     subtitle: "IDE Integration",
     category: "IDE INTEGRATION",
     iconName: "code",
-    iconColor: "text-emerald-500",
+    iconColor: "text-accent-green",
     logo: null as any,
   },
   {
@@ -714,7 +714,7 @@ function CursorWorkflowContent() {
         <div className="flex gap-1.5 mb-4 border-b border-white/5 pb-2">
           <div className="w-2.5 h-2.5 rounded-full bg-red-400/80"></div>
           <div className="w-2.5 h-2.5 rounded-full bg-yellow-400/80"></div>
-          <div className="w-2.5 h-2.5 rounded-full bg-green-400/80"></div>
+          <div className="w-2.5 h-2.5 rounded-full bg-accent-green/80"></div>
           <span className="text-[10px] text-white/30 ml-2 font-sans select-none">test-mcp.js</span>
         </div>
         <div className="text-xs leading-relaxed text-slate-300 flex-grow whitespace-pre-wrap">
@@ -750,10 +750,10 @@ function CursorWorkflowContent() {
                   key={idx} 
                   className={
                     isCommand 
-                      ? "text-slate-400" 
+                      ? "text-slate-400 dark:text-text-muted" 
                       : isSuccess 
                       ? "text-accent-green" 
-                      : "text-slate-300/80"
+                      : "text-slate-300/80 dark:text-text-muted/80"
                   }
                 >
                   {line}
@@ -934,14 +934,14 @@ function HttpBridgeWorkflowContent() {
           </div>
           <div>
             <span className="text-white/40">Headers:</span>
-            <div className="pl-4 text-slate-400">
+            <div className="pl-4 text-slate-400 dark:text-text-muted">
               Content-Type: application/json<br />
               Authorization: Bearer zc_live_99f...
             </div>
           </div>
           <div>
             <span className="text-white/40">Payload:</span>
-            <div className="pl-4 text-emerald-200/90 whitespace-pre">
+            <div className="pl-4 text-accent-green-text/90 whitespace-pre">
 {`{
   "facility": "mumbai",
   "scope": 2,

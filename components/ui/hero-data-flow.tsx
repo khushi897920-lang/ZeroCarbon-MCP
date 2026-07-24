@@ -21,10 +21,10 @@ const outputNodes: DataNode[] = [
 
 function NodeCard({ node, side }: { node: DataNode; side: "input" | "output" }) {
   const isInput = side === "input";
-  const accentColor = isInput ? "from-emerald-500/20 to-emerald-500/0" : "from-cyan-500/20 to-cyan-500/0";
-  const borderColor = isInput ? "border-emerald-500/30" : "border-cyan-500/30";
-  const textColor = isInput ? "text-emerald-400" : "text-cyan-400";
-  const iconColor = isInput ? "text-emerald-400" : "text-cyan-400";
+  const accentColor = isInput ? "from-accent-green/20 to-accent-green/0" : "from-cyan-500/20 to-cyan-500/0";
+  const borderColor = isInput ? "border-accent-green/30" : "border-cyan-500/30";
+  const textColor = isInput ? "text-accent-green-text" : "text-cyan-400";
+  const iconColor = isInput ? "text-accent-green-text" : "text-cyan-400";
 
   return (
     <div className="group relative">
@@ -37,7 +37,7 @@ function NodeCard({ node, side }: { node: DataNode; side: "input" | "output" }) 
       >
         <div className="flex items-center gap-2.5">
           <span className={`material-symbols-outlined text-sm ${iconColor}`}>{node.icon}</span>
-          <span className="text-sm font-medium text-zinc-300">{node.label}</span>
+          <span className="text-sm font-medium text-zinc-300 dark:text-text-muted">{node.label}</span>
         </div>
       </div>
     </div>
@@ -70,10 +70,10 @@ function CoreNode() {
         {/* Core text */}
         <div className="relative z-10 text-center space-y-1">
           <div className="flex items-center justify-center gap-2 mb-2">
-            <span className="material-symbols-outlined text-emerald-400">hub</span>
+            <span className="material-symbols-outlined text-accent-green-text">hub</span>
           </div>
-          <p className="text-xs font-semibold text-zinc-200">ZeroCarbon</p>
-          <p className="text-[10px] text-zinc-400">MCP Core</p>
+          <p className="text-xs font-semibold text-zinc-200 dark:text-text-main">ZeroCarbon</p>
+          <p className="text-[10px] text-zinc-400 dark:text-text-muted">MCP Core</p>
         </div>
       </div>
     </div>

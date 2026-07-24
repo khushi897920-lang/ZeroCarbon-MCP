@@ -153,33 +153,202 @@ html.dark {
 .dark {
   --color-background: #0B0F0D;
   --color-off-white: #0B0F0D;
-  --color-text-main: #f7faf8;
-  --color-text-muted: #ABC2B5;
-  --color-primary: #22c55e;
-  --color-on-primary: #0B0F0D;
-  --color-surface-mint: #121c17;
+  --color-text-main: #ffffff;
+  --color-text-muted: #d1e7dd;
+  --color-primary: #032416;
+  --color-on-primary: #ffffff;
+  --color-surface-mint: #0a1f15;
   --color-outline-variant: #283a30;
   --color-surface: #0B0F0D;
   --color-surface-container-low: #0f1613;
-  --color-accent-green: #22c55e;
-  --color-secondary-container: #1b2e23;
-  --color-on-secondary-container: #82a48f;
+  --color-accent-green: #032416;
+  --color-secondary-container: #0a1f15;
+  --color-on-secondary-container: #b7ccb9;
   --color-surface-variant: #1c2621;
   --color-surface-container: #17201c;
   --color-surface-container-high: #1e2924;
   --color-surface-container-highest: #24322b;
   --color-surface-container-lowest: #060908;
-  --color-on-surface: #f7faf8;
-  --color-on-background: #f7faf8;
-  --color-inverse-surface: #f7faf8;
+  --color-on-surface: #ffffff;
+  --color-on-background: #ffffff;
+  --color-inverse-surface: #ffffff;
   --color-inverse-on-surface: #0b0f0d;
 
-  --color-step-bg: #151f1b;
-  --color-instructions-bg: #101815;
-  --color-code-inline-bg: #1d2721;
+  --color-step-bg: #0a1f15;
+  --color-instructions-bg: #0f1613;
+  --color-code-inline-bg: #1e2924;
   --color-code-inline-text: #e5e7eb;
-  --color-accent-green-text: #4ade80;
-  --color-badge-bg: rgba(34, 197, 94, 0.1);
+  --color-accent-green-text: #86efac;
+  --color-badge-bg: rgba(3, 36, 22, 0.3);
+}
+
+/* Force all slate and neutral text colors to use proper dark mode variants */
+.dark .text-slate-700,
+.dark .text-slate-800,
+.dark .text-slate-900,
+.dark .text-neutral-600,
+.dark .text-neutral-700,
+.dark .text-neutral-800,
+.dark .text-neutral-900,
+.dark .text-slate-600,
+.dark .text-slate-500 {
+  color: #f7faf8 !important;
+}
+
+.dark .text-slate-400,
+.dark .text-slate-500,
+.dark .text-neutral-400,
+.dark .text-neutral-500,
+.dark .text-slate-300,
+.dark .text-neutral-300 {
+  color: #d1e7dd !important;
+}
+
+.dark .text-zinc-100,
+.dark .text-zinc-200,
+.dark .text-zinc-300,
+.dark .text-zinc-400,
+.dark .text-zinc-500 {
+  color: #d1e7dd !important;
+}
+
+/* Force all white text to be visible on dark backgrounds */
+.dark .text-white,
+.dark .text-white\/90,
+.dark .text-white\/80,
+.dark .text-white\/70,
+.dark .text-white\/60,
+.dark .text-white\/50,
+.dark .text-white\/40,
+.dark .text-white\/30 {
+  color: #f7faf8 !important;
+}
+
+/* Force black text to be visible in dark mode */
+.dark .text-black,
+.dark .text-black\/80,
+.dark .text-black\/70,
+.dark .text-black\/60 {
+  color: #f7faf8 !important;
+}
+
+/* Force background colors to have proper contrast */
+.dark .bg-white,
+.dark .bg-white\/80,
+.dark .bg-white\/70,
+.dark .bg-white\/60,
+.dark .bg-white\/50 {
+  background-color: #1e2924 !important;
+}
+
+.dark .bg-slate-50,
+.dark .bg-slate-100,
+.dark .bg-slate-200,
+.dark .bg-slate-300 {
+  background-color: #1e2924 !important;
+}
+
+.dark .bg-neutral-50,
+.dark .bg-neutral-100,
+.dark .bg-neutral-200,
+.dark .bg-neutral-300 {
+  background-color: #1e2924 !important;
+}
+
+.dark .bg-zinc-50,
+.dark .bg-zinc-100,
+.dark .bg-zinc-200,
+.dark .bg-zinc-300 {
+  background-color: #1e2924 !important;
+}
+
+/* Comprehensive text color fix for dark mode - direct approach */
+.dark body,
+.dark html {
+  color: #ffffff !important;
+}
+
+/* Force all text elements to be white in dark mode */
+.dark p,
+.dark span,
+.dark div,
+.dark h1,
+.dark h2,
+.dark h3,
+.dark h4,
+.dark h5,
+.dark h6,
+.dark a,
+.dark button,
+.dark input,
+.dark textarea,
+.dark select,
+.dark label,
+.dark li,
+.dark td,
+.dark th {
+  color: #ffffff !important;
+}
+
+/* Allow specific accent colors to override */
+.dark .text-accent-green,
+.dark .text-accent-green-text,
+.dark .text-emerald-400,
+.dark .text-emerald-500,
+.dark .text-emerald-600,
+.dark .text-green-400,
+.dark .text-green-500,
+.dark .text-green-600 {
+  color: #86efac !important;
+}
+
+.dark .text-indigo-400,
+.dark .text-indigo-500,
+.dark .text-indigo-600,
+.dark .text-indigo-700 {
+  color: #a5b4fc !important;
+}
+
+.dark .text-amber-200,
+.dark .text-amber-400,
+.dark .text-amber-500,
+.dark .text-amber-600 {
+  color: #fcd34d !important;
+}
+
+.dark .text-red-400,
+.dark .text-red-500,
+.dark .text-red-600 {
+  color: #f87171 !important;
+}
+
+.dark .text-cyan-400,
+.dark .text-cyan-500 {
+  color: #67e8f9 !important;
+}
+
+.dark .text-rose-400,
+.dark .text-rose-500 {
+  color: #fb7185 !important;
+}
+
+.dark .text-violet-400,
+.dark .text-violet-500,
+.dark .text-violet-700 {
+  color: #a78bfa !important;
+}
+
+.dark .text-teal-300 {
+  color: #5eead4 !important;
+}
+
+.dark .text-blue-300 {
+  color: #93c5fd !important;
+}
+
+.dark .text-purple-200,
+.dark .text-purple-300 {
+  color: #c4b5fd !important;
 }
 
 /* Force navbar backgrounds to remain original dark green in both themes */

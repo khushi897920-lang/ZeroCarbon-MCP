@@ -95,7 +95,7 @@ export function DocsSidebar({
           {searchQuery && (
             <button
               onClick={() => setSearchQuery("")}
-              className="absolute right-3 top-2.5 text-neutral-400 hover:text-neutral-600 dark:hover:text-text-main cursor-pointer"
+              className="absolute right-3 top-2.5 text-neutral-400 dark:text-text-muted hover:text-neutral-600 dark:hover:text-text-main cursor-pointer"
             >
               <span className="material-symbols-outlined text-[14px]">close</span>
             </button>

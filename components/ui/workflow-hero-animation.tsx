@@ -120,10 +120,10 @@ function WorkflowNode({ node, index }: { node: Node; index: number }) {
         ease: "easeOut",
       }}
     >
-      <span className="material-symbols-outlined text-[18px] text-emerald-600 shrink-0">
+      <span className="material-symbols-outlined text-[18px] text-accent-green shrink-0">
         {node.icon}
       </span>
-      <span className="text-xs font-medium text-slate-700 dark:text-text-muted group-hover:text-slate-900 dark:group-hover:text-text-main line-clamp-2">
+      <span className="text-xs font-medium text-slate-800 dark:text-text-muted group-hover:text-slate-900 dark:group-hover:text-text-main line-clamp-2">
         {node.label}
       </span>
     </motion.div>
