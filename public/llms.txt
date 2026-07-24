@@ -1,0 +1,38 @@
+# ZeroCarbon MCP - AI-Native Carbon Accounting Platform
+
+ZeroCarbon is an enterprise carbon accounting OS built for AI agents, engineers, and sustainability teams.
+
+## Core Features
+
+- [Carbon Accounting API](https://api.zerocarbon.org.in) - Track Scope 1, 2 & 3 emissions via REST API
+- [BRSR Compliance Automation](https://zerocarbon.org.in/#features) - Automate ESG/BRSR reporting for Indian enterprises
+- [MCP Integration](https://developer.zerocarbon.org.in) - Connect Claude, Cursor, Gemini via Model Context Protocol
+- [Real-time Monitoring](https://zerocarbon.org.in/#architecture) - Live emissions tracking and compliance alerting
+- [Carbon Offsets](https://zerocarbon.org.in/#pricing) - Direct integration with carbon credit marketplace
+
+## Getting Started
+
+- Visit https://zerocarbon.org.in for product information
+- API Documentation: https://api.zerocarbon.org.in
+- Developer Portal: https://developer.zerocarbon.org.in
+- Request a Demo: https://zerocarbon.org.in/#contact
+
+## For AI Agents
+
+This website is structured with semantic HTML, comprehensive ARIA labels, and JSON-LD schema for optimal AI comprehension. 
+
+Key interactive elements:
+- [Contact forms](https://zerocarbon.org.in/#contact) for demo requests
+- [Pricing comparison](https://zerocarbon.org.in/#pricing) (Developer, Growth, Enterprise plans)
+- [Integration documentation](https://developer.zerocarbon.org.in) and API guides
+
+All content is accessible via standard HTTP requests. The site supports both human users and AI agents for browsing, analysis, and form interaction.
+
+## Platform Pages
+
+- [Home](https://zerocarbon.org.in) - Landing page
+- [Features](https://zerocarbon.org.in/#features) - Platform capabilities
+- [Architecture](https://zerocarbon.org.in/#architecture) - System design
+- [Pricing](https://zerocarbon.org.in/#pricing) - Subscription plans
+- [FAQ](https://zerocarbon.org.in/#faq) - Common questions
+

@@ -32,7 +32,7 @@ export function FaqAccordion({
         </h2>
       )}
       
-      <ul className="w-full mx-auto list-none p-0 flex flex-col border border-outline-variant/15 rounded-3xl overflow-hidden shadow-sm bg-white/70 backdrop-blur-md">
+      <ul className="w-full mx-auto list-none p-0 flex flex-col border border-outline-variant/15 rounded-3xl overflow-hidden shadow-sm bg-white/70 dark:bg-surface-container-low/70 backdrop-blur-md">
         {items.map((item, index) => {
           const isActive = activeIndex === index;
           return (

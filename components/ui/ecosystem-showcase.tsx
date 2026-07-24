@@ -74,7 +74,7 @@ const integrations: IntegrationInfo[] = [
     subtitle: "IDE Integration",
     category: "IDE INTEGRATION",
     iconName: "code",
-    iconColor: "text-emerald-500",
+    iconColor: "text-accent-green",
     logo: null as any,
   },
   {
@@ -177,7 +177,7 @@ export function EcosystemShowcase() {
                   className={`relative p-5 rounded-2xl cursor-pointer select-none transition-all duration-300 border flex items-center justify-between gap-4 shadow-sm h-24 ${
                     isSelected
                       ? "bg-primary text-on-primary border-accent-green shadow-[0_0_25px_rgba(46,92,68,0.35)] z-20"
-                      : "bg-white border-outline-variant/20 hover:border-accent-green/40 hover:shadow-[0_0_15px_rgba(46,92,68,0.1)] text-text-main"
+                      : "bg-white dark:bg-surface-container-low border-outline-variant/20 dark:border-outline-variant/10 hover:border-accent-green/40 hover:shadow-[0_0_15px_rgba(46,92,68,0.1)] text-text-main"
                   }`}
                   role="button"
                   tabIndex={0}
@@ -268,7 +268,7 @@ export function EcosystemShowcase() {
         {/* Right Side Column: Interactive showcase or accordion panel */}
         <div className="w-full relative h-full">
           {/* Desktop/Tablet Panel Container */}
-          <div className="hidden md:block w-full bg-white border border-outline-variant/15 rounded-[40px] p-6 shadow-sm min-h-[500px] flex flex-col">
+          <div className="hidden md:block w-full bg-white dark:bg-surface-container-low border border-outline-variant/15 rounded-[40px] p-6 shadow-sm min-h-[500px] flex flex-col">
             <div className="text-center mb-8">
               <p className="font-label-caps text-label-caps text-text-muted uppercase">
                 Click any integration to see how it works with ZeroCarbon MCP
@@ -333,6 +333,7 @@ export function EcosystemShowcase() {
                         stroke={isActive ? "#2E5C44" : "#e3e3e0"}
                         strokeWidth={isActive ? 2 : 1.5}
                         strokeDasharray={isActive ? "none" : "4 4"}
+                        initial={{ opacity: 0.5 }}
                         animate={isActive ? { strokeWidth: [2, 3, 2], opacity: [0.8, 1, 0.8] } : { opacity: 0.5 }}
                         transition={isActive ? { repeat: Infinity, duration: 2, ease: "easeInOut" } : undefined}
                       />
@@ -713,7 +714,7 @@ function CursorWorkflowContent() {
         <div className="flex gap-1.5 mb-4 border-b border-white/5 pb-2">
           <div className="w-2.5 h-2.5 rounded-full bg-red-400/80"></div>
           <div className="w-2.5 h-2.5 rounded-full bg-yellow-400/80"></div>
-          <div className="w-2.5 h-2.5 rounded-full bg-green-400/80"></div>
+          <div className="w-2.5 h-2.5 rounded-full bg-accent-green/80"></div>
           <span className="text-[10px] text-white/30 ml-2 font-sans select-none">test-mcp.js</span>
         </div>
         <div className="text-xs leading-relaxed text-slate-300 flex-grow whitespace-pre-wrap">
@@ -749,10 +750,10 @@ function CursorWorkflowContent() {
                   key={idx} 
                   className={
                     isCommand 
-                      ? "text-slate-400" 
+                      ? "text-slate-400 dark:text-text-muted" 
                       : isSuccess 
                       ? "text-accent-green" 
-                      : "text-slate-300/80"
+                      : "text-slate-300/80 dark:text-text-muted/80"
                   }
                 >
                   {line}
@@ -933,14 +934,14 @@ function HttpBridgeWorkflowContent() {
           </div>
           <div>
             <span className="text-white/40">Headers:</span>
-            <div className="pl-4 text-slate-400">
+            <div className="pl-4 text-slate-400 dark:text-text-muted">
               Content-Type: application/json<br />
               Authorization: Bearer zc_live_99f...
             </div>
           </div>
           <div>
             <span className="text-white/40">Payload:</span>
-            <div className="pl-4 text-emerald-200/90 whitespace-pre">
+            <div className="pl-4 text-accent-green-text/90 whitespace-pre">
 {`{
   "facility": "mumbai",
   "scope": 2,

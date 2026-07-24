@@ -74,7 +74,7 @@ export function StackedSteps() {
           <ScrollStackItem key={step.num}>
             <div
               className={`
-                rounded-[40px] border ${step.borderClass} ${step.bgClass}
+                rounded-[40px] border ${step.borderClass} ${step.bgClass} ${step.bgClass === 'bg-white' ? 'dark:bg-surface-container' : ''}
                 shadow-[0_12px_48px_rgba(3,36,22,0.08)]
                 p-10 md:p-14 max-w-5xl mx-auto
                 grid md:grid-cols-[1fr_2.2fr_0.8fr] gap-10 md:gap-16 items-center

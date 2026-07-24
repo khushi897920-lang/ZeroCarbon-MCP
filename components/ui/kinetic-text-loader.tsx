@@ -16,12 +16,9 @@ export function KineticTextLoader({
   return (
     <div 
       className={`relative flex items-center justify-center font-light ${className || ""}`}
-      style={{ fontFamily: "'Roboto', sans-serif" }}
       {...props}
     >
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap');
-        
         @keyframes ktl-dotMove {
           0%, 100% { transform: rotate(180deg) translate(-80px, -10px) rotate(-180deg); }
           50% { transform: rotate(0deg) translate(-81px, 10px) rotate(0deg); }
@@ -50,7 +47,7 @@ export function KineticTextLoader({
           style={{ animation: "ktl-dotMove 1800ms cubic-bezier(0.25,0.25,0.75,0.75) infinite" }}
         />
         
-        <p className="relative m-0 whitespace-nowrap text-[3.75rem] text-primary" aria-label={text}>
+        <p className="relative m-0 whitespace-nowrap text-[3.75rem] text-primary font-display-md" aria-label={text}>
           {letters.map((char, index) => {
             if (index === 0) {
               return (

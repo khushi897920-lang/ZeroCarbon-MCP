@@ -1,6 +1,9 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
+import Link from "next/link";
+import { motion, AnimatePresence } from "framer-motion";
+import { useTheme } from "next-themes";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
@@ -10,13 +13,29 @@ import dynamic from "next/dynamic";
 import AnimatedButton from "../components/ui/animated-button";
 import NotchNavbar from "../components/ui/notch-navbar";
 import { LogoCloud } from "../components/ui/logo-cloud";
-import { StackedSteps } from "../components/ui/stacked-steps";
-import { EcosystemShowcase } from "../components/ui/ecosystem-showcase";
-import { PlatformNetwork } from "../components/ui/platform-network";
+const StackedSteps = dynamic(() => import("../components/ui/stacked-steps").then(mod => mod.StackedSteps), {
+  ssr: false,
+  loading: () => <div className="min-h-[400px] w-full bg-surface-container-low animate-pulse rounded-[40px] flex items-center justify-center text-text-muted">Loading steps...</div>
+});
+
+const EcosystemShowcase = dynamic(() => import("../components/ui/ecosystem-showcase").then(mod => mod.EcosystemShowcase), {
+  ssr: false,
+  loading: () => <div className="min-h-[400px] w-full bg-surface-container-low animate-pulse rounded-[40px] flex items-center justify-center text-text-muted">Loading ecosystem...</div>
+});
+
+const PlatformNetwork = dynamic(() => import("../components/ui/platform-network").then(mod => mod.PlatformNetwork), {
+  ssr: false,
+  loading: () => <div className="min-h-[400px] w-full bg-surface-container-low animate-pulse rounded-[40px] flex items-center justify-center text-text-muted">Loading network...</div>
+});
 
 const McpFlow = dynamic(() => import("../components/ui/mcp-flow"), {
   ssr: false,
-  loading: () => <div className="w-full aspect-[4/3] bg-surface-mint/30 animate-pulse rounded-[40px] flex items-center justify-center text-text-muted">Loading visualization...</div>
+  loading: () => <div className="w-full aspect-4/3 bg-surface-mint/30 animate-pulse rounded-[40px] flex items-center justify-center text-text-muted">Loading visualization...</div>
+});
+
+const HeroInteractiveFlow = dynamic(() => import("../components/ui/HeroInteractiveFlow"), {
+  ssr: false,
+  loading: () => <div className="w-full max-w-5xl aspect-video mx-auto bg-surface-mint/30 animate-pulse rounded-2xl flex items-center justify-center text-text-muted">Loading flow...</div>
 });
 
 const FaqAccordion = dynamic(() => import("../components/ui/faq-accordion"), {
@@ -29,10 +48,43 @@ if (typeof window !== "undefined") {
 }
 
 export default function Home() {
+  const { resolvedTheme } = useTheme();
+  const isDark = resolvedTheme === "dark";
   const containerRef = useRef<HTMLDivElement>(null);
+  const leftColumnRef = useRef<HTMLDivElement>(null);
+  const [leftColumnHeight, setLeftColumnHeight] = useState<number | null>(null);
+  const [isMcpModalOpen, setIsMcpModalOpen] = useState(false);
+  const [activeMcpTab, setActiveMcpTab] = useState("claude");
+  const [copiedText, setCopiedText] = useState<string | null>(null);
+
+  const handleCopy = (text: string, id: string) => {
+    navigator.clipboard.writeText(text);
+    setCopiedText(id);
+    setTimeout(() => setCopiedText(null), 2000);
+  };
 
   // Get lenis instance for programmatic scrollTo calls
   const lenis = useLenis();
+
+  // Measure left column height
+  useEffect(() => {
+    const updateHeight = () => {
+      if (leftColumnRef.current) {
+        setLeftColumnHeight(leftColumnRef.current.offsetHeight);
+      }
+    };
+
+    // Initial measurement
+    updateHeight();
+
+    // Update on resize
+    const resizeObserver = new ResizeObserver(updateHeight);
+    if (leftColumnRef.current) {
+      resizeObserver.observe(leftColumnRef.current);
+    }
+
+    return () => resizeObserver.disconnect();
+  }, []);
 
   // Note: Lenis <-> GSAP sync is handled globally in ScrollProvider (single RAF loop)
 
@@ -57,6 +109,13 @@ export default function Home() {
     const prefersReducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
     if (prefersReducedMotion) return;
 
+    // Skip ALL GSAP animations on mobile — CSS makes everything visible by default
+    // (see globals.css @media (max-width: 767px) block). Running GSAP on mobile
+    // would temporarily set elements to autoAlpha:0 before animating in, causing
+    // invisible content during Lighthouse audits and harming LCP/TBT scores.
+    const isMobileViewport = window.innerWidth < 768;
+    if (isMobileViewport) return;
+
     // ─── Shared defaults ────────────────────────────────────────────────────
     // force3D: true ensures GSAP always uses 3D transforms (translateZ(0)),
     // which forces the browser to paint these elements on the GPU compositor
@@ -70,17 +129,15 @@ export default function Home() {
     };
 
     // ─── 1. Hero entrance — fires immediately on mount ───────────────────────
-    // autoAlpha: smoother than opacity alone — also sets visibility:hidden
-    // so off-screen elements don't receive pointer events before animating in.
     gsap.fromTo(
       ".hero-animate",
-      { autoAlpha: 0, y: 48, force3D: true },
+      { autoAlpha: 0, y: 32, force3D: true },
       {
         autoAlpha: 1,
         y: 0,
-        duration: 1.1,
-        stagger: 0.13,
-        ease: "expo.out",    // exponential: blazing fast start, incredibly soft landing
+        duration: 0.9,
+        stagger: 0.1,
+        ease: "power3.out",
         clearProps: "transform,opacity,visibility",
         force3D: true,
       }
@@ -110,106 +167,116 @@ export default function Home() {
     });
 
     // ─── 3. Feature cards stagger ───────────────────────────────────────────
-    gsap.fromTo(
-      ".feature-card",
-      { autoAlpha: 0, y: 52, force3D: true },
-      {
-        ...defaults,
-        autoAlpha: 1,
-        y: 0,
-        duration: 0.85,
-        stagger: { each: 0.13, ease: "power1.inOut" },
-        ease: "power3.out",
-        scrollTrigger: {
-          trigger: "#features",
-          start: "top 82%",
-          once: true,
-        },
-      }
-    );
+    if (document.querySelector(".feature-card")) {
+      gsap.fromTo(
+        ".feature-card",
+        { autoAlpha: 0, y: 52, force3D: true },
+        {
+          ...defaults,
+          autoAlpha: 1,
+          y: 0,
+          duration: 0.85,
+          stagger: { each: 0.13, ease: "power1.inOut" },
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: "#features",
+            start: "top 82%",
+            once: true,
+          },
+        }
+      );
+    }
 
     // ─── 4. Pricing cards stagger ───────────────────────────────────────────
-    gsap.fromTo(
-      ".pricing-card",
-      { autoAlpha: 0, y: 52, force3D: true },
-      {
-        ...defaults,
-        autoAlpha: 1,
-        y: 0,
-        duration: 0.85,
-        stagger: { each: 0.13, ease: "power1.inOut" },
-        ease: "power3.out",
-        scrollTrigger: {
-          trigger: "#pricing",
-          start: "top 82%",
-          once: true,
-        },
-      }
-    );
+    if (document.querySelector(".pricing-card")) {
+      gsap.fromTo(
+        ".pricing-card",
+        { autoAlpha: 0, y: 52, force3D: true },
+        {
+          ...defaults,
+          autoAlpha: 1,
+          y: 0,
+          duration: 0.85,
+          stagger: { each: 0.13, ease: "power1.inOut" },
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: "#pricing",
+            start: "top 82%",
+            once: true,
+          },
+        }
+      );
+    }
 
     // ─── 5. Count-up stats ──────────────────────────────────────────────────
     const stats = gsap.utils.toArray<HTMLElement>("[data-count]");
-    stats.forEach((el) => {
-      const target = Number(el.getAttribute("data-count") ?? "0");
-      const suffix = el.getAttribute("data-count-suffix") ?? "";
-      const prefix = el.getAttribute("data-count-prefix") ?? "";
-      const divider = el.getAttribute("data-count-divider") ?? "";
-      const counter = { val: 0 };
+    if (stats.length > 0 && document.querySelector("#architecture")) {
+      stats.forEach((el) => {
+        const target = Number(el.getAttribute("data-count") ?? "0");
+        const suffix = el.getAttribute("data-count-suffix") ?? "";
+        const prefix = el.getAttribute("data-count-prefix") ?? "";
+        const divider = el.getAttribute("data-count-divider") ?? "";
+        const counter = { val: 0 };
 
-      gsap.to(counter, {
-        val: target,
-        duration: 1.4,
-        ease: "power2.out",
-        scrollTrigger: {
-          trigger: "#architecture",
-          start: "top 80%",
-          once: true,
-        },
-        onUpdate: () => {
-          const current = Math.round(counter.val);
-          el.textContent = divider
-            ? `${current}${divider}${suffix}`
-            : `${prefix}${current}${suffix}`;
-        },
+        gsap.to(counter, {
+          val: target,
+          duration: 1.4,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: "#architecture",
+            start: "top 80%",
+            once: true,
+          },
+          onUpdate: () => {
+            const current = Math.round(counter.val);
+            el.textContent = divider
+              ? `${current}${divider}${suffix}`
+              : `${prefix}${current}${suffix}`;
+          },
+        });
       });
-    });
+    }
 
     // ─── 6. Architecture stagger items ──────────────────────────────────────
-    gsap.fromTo(
-      "#architecture .stagger-item",
-      { autoAlpha: 0, y: 36, force3D: true },
-      {
-        ...defaults,
-        autoAlpha: 1,
-        y: 0,
-        duration: 0.9,
-        ease: "power3.out",
-        scrollTrigger: {
-          trigger: "#architecture",
-          start: "top 80%",
-          once: true,
-        },
-      }
-    );
+    if (document.querySelector("#architecture .stagger-item")) {
+      gsap.fromTo(
+        "#architecture .stagger-item",
+        { autoAlpha: 0, y: 36, force3D: true },
+        {
+          ...defaults,
+          autoAlpha: 1,
+          y: 0,
+          duration: 0.9,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: "#architecture",
+            start: "top 80%",
+            once: true,
+          },
+        }
+      );
+    }
 
     // ─── 7. Developer section ───────────────────────────────────────────────
-    gsap.fromTo(
-      "#developers > div > div",
-      { autoAlpha: 0, y: 28, force3D: true },
-      {
-        ...defaults,
-        autoAlpha: 1,
-        y: 0,
-        duration: 0.85,
-        ease: "power3.out",
-        stagger: { each: 0.09, ease: "power1.inOut" },
-        scrollTrigger: {
-          trigger: "#developers",
-          start: "top 82%",
-          once: true,
-        },
-      }
-    );
+    if (document.querySelector("#developers")) {
+      gsap.fromTo(
+        "#developers > div > div",
+        { autoAlpha: 0, y: 28, force3D: true },
+        {
+          ...defaults,
+          autoAlpha: 1,
+          y: 0,
+          duration: 0.85,
+          ease: "power3.out",
+          stagger: { each: 0.09, ease: "power1.inOut" },
+          scrollTrigger: {
+            trigger: "#developers",
+            start: "top 82%",
+            once: true,
+          },
+        }
+      );
+    }
 
     // ─── 7b. Code lines typewriter reveal ────────────────────────────────────
     gsap.fromTo(
@@ -268,84 +335,92 @@ export default function Home() {
     }
 
     // ─── 8. Brand boxes (social proof) ──────────────────────────────────────
-    gsap.fromTo(
-      ".brand-box",
-      { autoAlpha: 0, y: 28, scale: 0.96, force3D: true },
-      {
-        ...defaults,
-        autoAlpha: 1,
-        y: 0,
-        scale: 1,
-        duration: 0.75,
-        ease: "expo.out",
-        stagger: { each: 0.08, ease: "power1.inOut" },
-        scrollTrigger: {
-          trigger: "#social-proof",
-          start: "top 82%",
-          once: true,
-        },
-      }
-    );
+    if (document.querySelector(".brand-box")) {
+      gsap.fromTo(
+        ".brand-box",
+        { autoAlpha: 0, y: 28, scale: 0.96, force3D: true },
+        {
+          ...defaults,
+          autoAlpha: 1,
+          y: 0,
+          scale: 1,
+          duration: 0.75,
+          ease: "expo.out",
+          stagger: { each: 0.08, ease: "power1.inOut" },
+          scrollTrigger: {
+            trigger: "#social-proof",
+            start: "top 82%",
+            once: true,
+          },
+        }
+      );
+    }
 
     // ─── 9. Glass cards ────────────────────────────────────────────────────
     const glassCards = gsap.utils.toArray<HTMLElement>(".glass-card");
-    glassCards.forEach((card) => {
+    if (glassCards.length > 0) {
+      glassCards.forEach((card) => {
+        gsap.fromTo(
+          card,
+          { autoAlpha: 0, y: 36, force3D: true },
+          {
+            ...defaults,
+            autoAlpha: 1,
+            y: 0,
+            duration: 0.85,
+            ease: "power3.out",
+            scrollTrigger: {
+              trigger: card,
+              start: "top 86%",
+              once: true,
+            },
+          }
+        );
+      });
+    }
+
+    // ─── 10. Engine cards ───────────────────────────────────────────────────
+    if (document.querySelector("[id='platform-engine'] .group")) {
       gsap.fromTo(
-        card,
+        "[id='platform-engine'] .group",
+        { autoAlpha: 0, y: 36, scale: 0.97, force3D: true },
+        {
+          ...defaults,
+          autoAlpha: 1,
+          y: 0,
+          scale: 1,
+          duration: 0.9,
+          ease: "expo.out",
+          stagger: { each: 0.1, ease: "power1.inOut" },
+          scrollTrigger: {
+            trigger: "#platform-engine",
+            start: "top 82%",
+            once: true,
+          },
+        }
+      );
+    }
+
+
+    // ─── 12. Final CTA section ──────────────────────────────────────────────
+    if (document.querySelector("#contact")) {
+      gsap.fromTo(
+        "#contact",
         { autoAlpha: 0, y: 36, force3D: true },
         {
           ...defaults,
           autoAlpha: 1,
           y: 0,
-          duration: 0.85,
+          duration: 0.9,
           ease: "power3.out",
           scrollTrigger: {
-            trigger: card,
-            start: "top 86%",
+            trigger: "#contact",
+            start: "top 82%",
             once: true,
           },
         }
       );
-    });
-
-    // ─── 10. Engine cards ───────────────────────────────────────────────────
-    gsap.fromTo(
-      "[id='platform-engine'] .group",
-      { autoAlpha: 0, y: 36, scale: 0.97, force3D: true },
-      {
-        ...defaults,
-        autoAlpha: 1,
-        y: 0,
-        scale: 1,
-        duration: 0.9,
-        ease: "expo.out",
-        stagger: { each: 0.1, ease: "power1.inOut" },
-        scrollTrigger: {
-          trigger: "#platform-engine",
-          start: "top 82%",
-          once: true,
-        },
-      }
-    );
-
-
-    // ─── 12. Final CTA section ──────────────────────────────────────────────
-    gsap.fromTo(
-      "#contact",
-      { autoAlpha: 0, y: 36, force3D: true },
-      {
-        ...defaults,
-        autoAlpha: 1,
-        y: 0,
-        duration: 0.9,
-        ease: "power3.out",
-        scrollTrigger: {
-          trigger: "#contact",
-          start: "top 82%",
-          once: true,
-        },
-      }
-    );
+    }
   }, { scope: containerRef });
 
 
@@ -355,101 +430,139 @@ export default function Home() {
     <div ref={containerRef}>
       <NotchNavbar />
 
-      <main>
+      <main className="relative overflow-x-hidden">
         {/* Hero Section */}
-        <section id="hero" className="pt-40 pb-12 w-full organic-bg ambient-hero overflow-hidden">
-          <div className="max-w-container-max mx-auto px-grid-margin relative">
-            <div className="absolute top-0 right-0 h-90 w-90 rounded-full bg-accent-green/10 blur-3xl"></div>
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center relative">
-            <div className="lg:col-span-5 space-y-8">
-              <div className="inline-flex items-center gap-3 rounded-full border border-accent-green/20 bg-surface-mint/90 px-4 py-2 text-sm font-semibold text-accent-green shadow-sm hero-animate">
-                <span className="h-2 w-2 rounded-full bg-accent-green animate-pulse"></span>
+        <section id="hero" className="flex items-center w-full organic-bg ambient-hero overflow-visible relative min-h-[100dvh] py-20 md:py-24 w-full">
+          <div className="max-w-container-max mx-auto px-4 sm:px-grid-margin relative">
+            <div className="absolute top-0 right-0 h-90 w-90 rounded-full bg-accent-green/5 blur-2xl z-0"></div>
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:items-stretch relative">
+            <div ref={leftColumnRef} className="lg:col-span-5 space-y-5 relative z-30 pointer-events-none text-center lg:text-left">
+              <div className="inline-flex items-center gap-2 rounded-full border border-accent-green/20 bg-surface-mint/90 px-3 py-1.5 text-xs font-semibold text-accent-green shadow-sm hero-animate pointer-events-auto">
+                <span className="h-1.5 w-1.5 rounded-full bg-accent-green animate-pulse"></span>
                 ZeroCarbon MCP launch
               </div>
-              <div className="space-y-6">
-                <h2 className="font-display-md text-5xl sm:text-6xl md:text-7xl font-bold italic text-primary tracking-tight leading-none mb-2 hero-animate">
+              <div className="space-y-3">
+                <h2 className="font-display-md text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold italic text-primary tracking-tight leading-none mb-1 hero-animate">
                   ZeroCarbon MCP
                 </h2>
-                <h1 className="font-display-lg text-display-lg max-md:text-headline-xl leading-[1.02] hero-animate">
+                <h1 className="font-display-lg text-2xl sm:text-3xl md:text-4xl lg:text-display-lg leading-tight hero-animate">
                   Turn every carbon signal into operational action.
                 </h1>
-                <p className="font-body-xl text-body-xl text-text-muted max-w-2xl hero-animate">
+                <p className="font-body-xl text-body-xl text-text-muted max-w-2xl mx-auto lg:mx-0 hero-animate text-sm">
                   A new MCP built to unify AI agents, carbon telemetry, and compliance workflows in one animated control plane.
                 </p>
               </div>
-              <div className="grid gap-4 sm:grid-cols-[1fr_auto]">
-                <AnimatedButton variant="solid" className="px-10 py-5 rounded-full font-body-md text-body-md flex items-center justify-center gap-2 hover:shadow-xl hero-animate" onClick={(e) => handleNavClick(e, '#contact')}>
+              <div className="flex flex-wrap items-center justify-center lg:justify-start gap-3">
+                <AnimatedButton as={Link} href="/request-demo" variant="solid" className="w-full sm:w-auto px-8 py-3 rounded-full font-body-md text-body-md flex items-center justify-center gap-2 hover:shadow-xl hero-animate pointer-events-auto text-sm">
                   Request a Demo
-                  <span className="material-symbols-outlined text-[20px]">arrow_forward</span>
+                  <span className="material-symbols-outlined text-base">arrow_forward</span>
                 </AnimatedButton>
-                <AnimatedButton variant="outline" className="px-10 py-5 rounded-full font-body-md text-body-md hero-animate" onClick={(e) => handleNavClick(e, '#signal-blocks')}>
-                  Explore Signals
-                </AnimatedButton>
+                <button type="button" aria-label="Open Add to my AI configuration modal" onClick={() => setIsMcpModalOpen(true)} className="inline-flex items-center gap-1 bg-white dark:bg-surface-container border border-neutral-200 dark:border-outline-variant/15 rounded-full px-5 py-3 shadow-sm hover:shadow-md transition-all duration-300 hero-animate pointer-events-auto text-sm cursor-pointer group">
+                  <span className="font-body-md font-bold text-neutral-800 dark:text-text-main pr-1.5 select-none">
+                    Add to my AI
+                  </span>
+                  
+                  {/* Icons row */}
+                  <div className="flex items-center gap-1.5 border-l border-neutral-200 dark:border-outline-variant/20 pl-3 mr-1">
+                    {/* Claude/Anthropic (Orange Asterisk/Flower) */}
+                    <span className="hover:scale-110 transition-transform duration-200 flex items-center" title="Claude / Anthropic">
+                      <svg className="w-3.5 h-3.5 text-[#D97706]" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2a1 1 0 011 1v6.59l4.66-4.66a1 1 0 111.41 1.41L14.41 11H21a1 1 0 110 2h-6.59l4.66 4.66a1 1 0 01-1.41 1.41L13 14.41V21a1 1 0 11-2 0v-6.59l-4.66 4.66a1 1 0 01-1.41-1.41L9.59 13H3a1 1 0 110-2h6.59L4.93 6.34a1 1 0 011.41-1.41L11 9.59V3a1 1 0 011-1z" />
+                      </svg>
+                    </span>
+                    
+                    {/* Vercel (Black Triangle) */}
+                    <span className="hover:scale-110 transition-transform duration-200 flex items-center" title="Vercel">
+                      <svg className="w-3.5 h-3.5 text-black dark:text-white" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 1L24 22H0L12 1z" />
+                      </svg>
+                    </span>
+
+                    {/* OpenAI/ChatGPT (Green Spiral) */}
+                    <span className="hover:scale-110 transition-transform duration-200 flex items-center" title="OpenAI / ChatGPT">
+                      <svg className="w-3.5 h-3.5 text-[#10a37f]" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M21.7 10.9a5.5 5.5 0 00-.7-2.9 5.6 5.6 0 00-2.3-2.1c-.2-.1-.4-.2-.7-.2h-.2c0-.4-.1-.8-.3-1.1a5.6 5.6 0 00-3.6-3.1 5.3 5.3 0 00-3.5.2c-.3.1-.5.3-.7.5l-.2.1c-.2-.2-.5-.4-.8-.5a5.5 5.5 0 00-5.8 1.1 5.5 5.5 0 00-1.4 3.7c0 .1 0 .2.1.4l-.1.1a5.5 5.5 0 00-.8 3.5 5.5 5.5 0 002.3 4.1c.2.1.4.2.7.2.1.2.2.4.3.6a5.5 5.5 0 003.8 2.7 5.4 5.4 0 003.1-.3l.7-.4.2-.1c.2.2.5.4.8.5a5.5 5.5 0 005.8-1.1 5.5 5.5 0 001.4-3.7c0-.2 0-.3-.1-.5v-.1c.3.1.5.1.8.1a5.5 5.5 0 004-1.9 5.5 5.5 0 001.2-3.7z" />
+                      </svg>
+                    </span>
+
+                    {/* Robot head/Copilot (Gray) */}
+                    <span className="hover:scale-110 transition-transform duration-200 flex items-center" title="AI Agents / Copilot">
+                      <svg className="w-3.5 h-3.5 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M18 10h-1.25A4.75 4.75 0 0012 14.75v0A4.75 4.75 0 007.25 10H6a4 4 0 00-4 4v2a4 4 0 004 4h12a4 4 0 004-4v-2a4 4 0 00-4-4z" />
+                        <circle cx="12" cy="5" r="3" />
+                      </svg>
+                    </span>
+                  </div>
+
+                  {/* Dropdown Chevron */}
+                  <span className="material-symbols-outlined text-xs text-neutral-400 ml-1 transition-transform duration-200 group-hover:translate-y-0.5" aria-hidden="true">
+                    expand_more
+                  </span>
+                </button>
               </div>
-              <div className="grid gap-4 sm:grid-cols-3">
-                <div className="rounded-4xl border border-outline-variant/15 bg-white/90 p-5 shadow-sm hero-animate">
-                  <p className="text-[11px] uppercase tracking-[0.24em] text-text-muted">Latency</p>
-                  <p className="mt-3 text-2xl font-bold text-primary">24 ms</p>
+              <div className="grid grid-cols-3 gap-2 sm:gap-3">
+                <div className="rounded-4xl border border-outline-variant/15 bg-surface/90 p-3 sm:p-4 shadow-sm hero-animate">
+                  <p className="text-[10px] uppercase tracking-[0.2em] font-semibold text-neutral-700 dark:text-neutral-300">Latency</p>
+                  <p className="mt-1 sm:mt-2 text-lg sm:text-xl font-bold text-primary dark:text-white">24 ms</p>
                 </div>
-                <div className="rounded-4xl border border-outline-variant/15 bg-white/90 p-5 shadow-sm hero-animate">
-                  <p className="text-[11px] uppercase tracking-[0.24em] text-text-muted">Scope coverage</p>
-                  <p className="mt-3 text-2xl font-bold text-primary">1-3</p>
+                <div className="rounded-4xl border border-outline-variant/15 bg-surface/90 p-3 sm:p-4 shadow-sm hero-animate">
+                  <p className="text-[10px] uppercase tracking-[0.2em] font-semibold text-neutral-700 dark:text-neutral-300">Scope coverage</p>
+                  <p className="mt-1 sm:mt-2 text-lg sm:text-xl font-bold text-primary dark:text-white">1-3</p>
                 </div>
-                <div className="rounded-4xl border border-outline-variant/15 bg-white/90 p-5 shadow-sm hero-animate">
-                  <p className="text-[11px] uppercase tracking-[0.24em] text-text-muted">Compliance</p>
-                  <p className="mt-3 text-2xl font-bold text-primary">CSRD + SEC</p>
+                <div className="rounded-4xl border border-outline-variant/15 bg-surface/90 p-3 sm:p-4 shadow-sm hero-animate">
+                  <p className="text-[10px] uppercase tracking-[0.2em] font-semibold text-neutral-700 dark:text-neutral-300">Compliance</p>
+                  <p className="mt-1 sm:mt-2 text-sm sm:text-xl font-bold text-primary dark:text-white">CSRD + SEC</p>
                 </div>
               </div>
             </div>
-            <div className="lg:col-span-7 relative hero-animate">
-              <McpFlow />
+            <div className="hidden lg:flex lg:col-span-7 relative hero-animate h-full items-center justify-center min-h-[280px] sm:min-h-[350px] md:min-h-[500px]">
+              <HeroInteractiveFlow containerHeight={leftColumnHeight || 500} />
             </div>
 
           </div>
           </div>
         </section>
+        {/* End Hero */}
 
-        {/* Logo Marquee — trust strip between Hero and Social Proof */}
-        <LogoCloud />
-
-        {/* Social Proof */}
-        <section id="social-proof" className="py-10">
-          <div className="max-w-container-max mx-auto px-grid-margin">
-            <div className="flow-soft relative overflow-hidden rounded-[40px] border border-outline-variant/20 bg-white p-10 shadow-[0_40px_90px_rgba(3,36,22,0.08)]">
-              <div className="absolute -right-10 top-12 h-48 w-48 rounded-full bg-accent-green/10 blur-3xl"></div>
-              <div className="grid gap-10 lg:grid-cols-[0.95fr_1.05fr] items-center">
-                <div className="space-y-6">
-                  <p className="font-label-caps text-label-caps uppercase text-accent-green">Trusted by modern AI teams</p>
-                  <h2 className="gsap-title font-headline-xl text-headline-xl leading-tight text-text-main">Built to scale carbon intelligence across product and operations.</h2>
-                  <p className="max-w-xl font-body-xl text-body-xl text-text-muted">ZeroCarbon MCP delivers live signals, actionable carbon guidance, and policy-safe workflow automation for companies shipping sustainable AI and cloud products.</p>
+        {/* Social Proof with Logo Marquee */}
+        <section id="social-proof" className="min-h-[100dvh] py-16 md:py-24 w-full flex flex-col justify-between py-10">
+          <LogoCloud />
+          <div className="max-w-container-max mx-auto px-grid-margin flex-1 w-full flex flex-col mt-10">
+            <div className="flow-soft flex-1 flex flex-col justify-center relative overflow-hidden rounded-[40px] border border-outline-variant/20 bg-white p-8 lg:p-12 shadow-[0_40px_90px_rgba(3,36,22,0.08)]">
+              <div className="absolute -right-10 top-12 h-48 w-48 rounded-full bg-accent-green/5 blur-2xl"></div>
+              <div className="grid grid-cols-1 gap-6 lg:grid-cols-[0.95fr_1.05fr] items-center">
+                <div className="space-y-4">
+                  <p className="font-label-caps text-xs uppercase text-accent-green">Trusted by modern AI teams</p>
+                  <h2 className="gsap-title font-headline-lg text-[2rem] leading-tight text-text-main">Built to scale carbon intelligence across product and operations.</h2>
+                  <p className="max-w-xl font-body-md text-text-muted text-sm">ZeroCarbon MCP delivers live signals, actionable carbon guidance, and policy-safe workflow automation.</p>
                 </div>
-                <div className="grid gap-4 sm:grid-cols-3">
-                  <div className="brand-box float-animation rounded-[28px] border border-outline-variant/15 bg-surface-mint/90 p-6 text-center" style={{ animationDelay: "0s" }}>
-                    <span className="material-symbols-outlined text-[28px] text-accent-green">bolt</span>
-                    <p className="mt-4 text-sm font-semibold text-primary">Speed-first</p>
+                <div className="grid gap-3 sm:grid-cols-3">
+                  <div className="brand-box float-animation rounded-[28px] border border-outline-variant/15 bg-surface-mint/90 p-4 text-center" style={{ animationDelay: "0s" }}>
+                    <span className="material-symbols-outlined text-2xl text-accent-green">bolt</span>
+                    <p className="mt-2 text-xs font-semibold text-primary">Speed-first</p>
                   </div>
-                  <div className="brand-box float-animation rounded-[28px] border border-outline-variant/15 bg-surface-mint/90 p-6 text-center" style={{ animationDelay: "0.2s" }}>
-                    <span className="material-symbols-outlined text-[28px] text-accent-green">shield</span>
-                    <p className="mt-4 text-sm font-semibold text-primary">Compliance-ready</p>
+                  <div className="brand-box float-animation rounded-[28px] border border-outline-variant/15 bg-surface-mint/90 p-4 text-center" style={{ animationDelay: "0.2s" }}>
+                    <span className="material-symbols-outlined text-2xl text-accent-green">shield</span>
+                    <p className="mt-2 text-xs font-semibold text-primary">Compliance-ready</p>
                   </div>
-                  <div className="brand-box float-animation rounded-[28px] border border-outline-variant/15 bg-surface-mint/90 p-6 text-center" style={{ animationDelay: "0.4s" }}>
-                    <span className="material-symbols-outlined text-[28px] text-accent-green">trending_up</span>
-                    <p className="mt-4 text-sm font-semibold text-primary">Impact-driven</p>
+                  <div className="brand-box float-animation rounded-[28px] border border-outline-variant/15 bg-surface-mint/90 p-4 text-center" style={{ animationDelay: "0.4s" }}>
+                    <span className="material-symbols-outlined text-2xl text-accent-green">trending_up</span>
+                    <p className="mt-2 text-xs font-semibold text-primary">Impact-driven</p>
                   </div>
                 </div>
               </div>
-              <div className="mt-10 grid gap-4 sm:grid-cols-3">
-                <div className="rounded-[28px] bg-primary/5 p-6">
-                  <p className="text-sm uppercase tracking-[0.18em] text-text-muted">Live streams</p>
-                  <p className="mt-4 text-3xl font-bold text-primary">84%</p>
+              <div className="mt-6 grid gap-3 sm:grid-cols-3">
+                <div className="rounded-[28px] bg-primary/5 p-4">
+                  <p className="text-xs uppercase tracking-[0.18em] text-text-muted">Live streams</p>
+                  <p className="mt-2 text-2xl font-bold text-primary">84%</p>
                 </div>
-                <div className="rounded-[28px] bg-primary/5 p-6">
-                  <p className="text-sm uppercase tracking-[0.18em] text-text-muted">Auto rules</p>
-                  <p className="mt-4 text-3xl font-bold text-primary">42</p>
+                <div className="rounded-[28px] bg-primary/5 p-4">
+                  <p className="text-xs uppercase tracking-[0.18em] text-text-muted">Auto rules</p>
+                  <p className="mt-2 text-2xl font-bold text-primary">42</p>
                 </div>
-                <div className="rounded-[28px] bg-primary/5 p-6">
-                  <p className="text-sm uppercase tracking-[0.18em] text-text-muted">Verified audits</p>
-                  <p className="mt-4 text-3xl font-bold text-primary">12k</p>
+                <div className="rounded-[28px] bg-primary/5 p-4">
+                  <p className="text-xs uppercase tracking-[0.18em] text-text-muted">Verified audits</p>
+                  <p className="mt-2 text-2xl font-bold text-primary">12k</p>
                 </div>
               </div>
             </div>
@@ -457,8 +570,8 @@ export default function Home() {
         </section>
 
         {/* Platform Engine */}
-        <section id="platform-engine" className="px-grid-margin py-12 md:py-16">
-          <div className="max-w-container-max mx-auto grid gap-10 lg:grid-cols-[0.95fr_1.05fr] items-center">
+        <section id="platform-engine" className="px-grid-margin min-h-[100dvh] py-16 md:py-24 w-full flex flex-col justify-center">
+          <div className="max-w-container-max mx-auto grid grid-cols-1 gap-10 lg:grid-cols-[0.95fr_1.05fr] items-center">
             <div className="space-y-8">
               <div className="space-y-4">
                 <p className="font-label-caps text-label-caps uppercase text-accent-green">Platform engine</p>
@@ -527,31 +640,32 @@ export default function Home() {
         </section>
 
         {/* Quick Answer */}
-        <section id="pulse" className="px-grid-margin py-12 md:py-16">
-          <div className="max-w-container-max mx-auto grid gap-8 lg:grid-cols-[0.95fr_1.05fr] items-start">
-            <div className="flow-soft relative overflow-hidden rounded-[40px] border border-outline-variant/20 bg-primary text-on-primary p-10 shadow-[0_28px_90px_rgba(3,36,22,0.16)]">
-              <div className="absolute -right-10 top-8 h-40 w-40 rounded-full bg-white/10 blur-3xl"></div>
-              <div className="absolute left-8 bottom-12 h-28 w-28 rounded-full border border-white/15 bg-white/5"></div>
-              <p className="font-label-caps text-label-caps uppercase text-accent-green/80">Signal intelligence</p>
-              <h2 className="gsap-title mt-4 font-headline-xl text-headline-xl max-md:text-headline-lg leading-tight">Watch your carbon footprint move from data to decisions.</h2>
-              <p className="mt-6 max-w-xl font-body-xl text-on-primary/80">Track every emission source and compliance alert in one place with live graphs, AI-driven recommendations, and dispatch-ready summaries.</p>
-              <div className="mt-10 grid gap-4 sm:grid-cols-3">
-                <div className="rounded-[32px] border border-white/15 bg-white/10 p-6">
-                  <p className="text-sm uppercase tracking-[0.2em] text-white/70">Alerts</p>
-                  <p className="mt-4 text-3xl font-bold">12</p>
+        <section id="pulse" className="px-grid-margin min-h-[100dvh] py-16 md:py-24 w-full flex flex-col justify-center">
+          <div className="max-w-container-max mx-auto grid grid-cols-1 gap-8 lg:grid-cols-[0.95fr_1.05fr] items-stretch min-h-[60vh] w-full">
+            <div className="flow-soft relative overflow-hidden rounded-[40px] border border-outline-variant/20 bg-primary text-on-primary p-10 shadow-[0_28px_90px_rgba(3,36,22,0.16)] flex flex-col justify-between">
+              <div className="absolute -right-10 top-8 h-40 w-40 rounded-full bg-white/5 blur-2xl"></div>
+              <div>
+                <p className="font-label-caps text-label-caps uppercase text-accent-green/80">Signal intelligence</p>
+                <h2 className="gsap-title mt-4 font-headline-xl text-headline-xl max-md:text-headline-lg leading-tight">Watch your carbon footprint move from data to decisions.</h2>
+                <p className="mt-6 max-w-xl font-body-xl text-on-primary/80">Track every emission source and compliance alert in one place with live graphs, AI-driven recommendations, and dispatch-ready summaries.</p>
+              </div>
+              <div className="mt-6 sm:mt-10 grid grid-cols-3 gap-2 sm:gap-4">
+                <div className="rounded-[20px] sm:rounded-[32px] border border-white/15 bg-white/10 p-3 sm:p-6">
+                  <p className="text-[10px] sm:text-sm uppercase tracking-[0.15em] sm:tracking-[0.2em] text-white/70">Alerts</p>
+                  <p className="mt-2 sm:mt-4 text-xl sm:text-3xl font-bold">12</p>
                 </div>
-                <div className="rounded-[32px] border border-white/15 bg-white/10 p-6">
-                  <p className="text-sm uppercase tracking-[0.2em] text-white/70">Automations</p>
-                  <p className="mt-4 text-3xl font-bold">33</p>
+                <div className="rounded-[20px] sm:rounded-[32px] border border-white/15 bg-white/10 p-3 sm:p-6">
+                  <p className="text-[10px] sm:text-sm uppercase tracking-[0.15em] sm:tracking-[0.2em] text-white/70">Automations</p>
+                  <p className="mt-2 sm:mt-4 text-xl sm:text-3xl font-bold">33</p>
                 </div>
-                <div className="rounded-[32px] border border-white/15 bg-white/10 p-6">
-                  <p className="text-sm uppercase tracking-[0.2em] text-white/70">Risk score</p>
-                  <p className="mt-4 text-3xl font-bold">4.8 / 5</p>
+                <div className="rounded-[20px] sm:rounded-[32px] border border-white/15 bg-white/10 p-3 sm:p-6">
+                  <p className="text-[10px] sm:text-sm uppercase tracking-[0.15em] sm:tracking-[0.2em] text-white/70">Risk score</p>
+                  <p className="mt-2 sm:mt-4 text-xl sm:text-3xl font-bold">4.8 / 5</p>
                 </div>
               </div>
             </div>
-            <div className="grid gap-4">
-              <div className="glass-card rounded-4xl border border-outline-variant/20 bg-white/95 p-8 shadow-sm">
+            <div className="flex flex-col gap-4">
+              <div className="glass-card flex-1 rounded-[40px] border border-outline-variant/20 bg-white/95 p-8 lg:p-10 shadow-sm flex flex-col justify-center">
                 <div className="flex items-center justify-between gap-4">
                   <div>
                     <p className="font-label-caps text-label-caps uppercase text-text-muted">Streamlined workflow</p>
@@ -568,7 +682,7 @@ export default function Home() {
                   </div>
                 </div>
               </div>
-              <div className="flow-soft rounded-[40px] border border-outline-variant/20 bg-white p-8 shadow-[0_20px_40px_rgba(3,36,22,0.08)]">
+              <div className="flow-soft flex-1 rounded-[40px] border border-outline-variant/20 bg-white p-8 lg:p-10 shadow-[0_20px_40px_rgba(3,36,22,0.08)] flex flex-col justify-center">
                 <p className="font-label-caps text-label-caps uppercase text-accent-green">Trusted by</p>
                 <div className="mt-8 grid gap-4 sm:grid-cols-2">
                   <div className="rounded-[28px] border border-outline-variant/15 bg-surface-mint/80 p-4 text-center">
@@ -590,22 +704,22 @@ export default function Home() {
         </section>
 
         {/* Quick Answer */}
-        <section className="px-grid-margin py-12 md:py-16">
-          <div className="bg-surface-mint rounded-[48px] p-12 md:p-24 text-center max-w-5xl mx-auto space-y-8">
+        <section className="px-4 sm:px-grid-margin min-h-[100dvh] py-16 md:py-24 w-full flex flex-col justify-center">
+          <div className="bg-surface-mint rounded-[32px] sm:rounded-[48px] p-6 sm:p-12 md:p-20 text-center max-w-5xl mx-auto space-y-6">
             <p className="font-label-caps text-label-caps text-accent-green tracking-widest uppercase">Quick Answer</p>
             <h2 className="gsap-title font-headline-xl text-headline-xl max-md:text-headline-lg leading-tight">What is ZeroCarbon MCP?</h2>
             <p className="font-body-xl text-body-xl text-text-main max-w-2xl mx-auto opacity-80">
-              ZeroCarbon MCP is the industry&apos;s first AI-native operating system designed to automate carbon referrals, 
+              ZeroCarbon MCP is the industry&apos;s first AI-native operating system designed to automate carbon referrals,
               calculate Scope 1-3 emissions in real-time, and maintain continuous regulatory compliance for engineering-heavy enterprises.
             </p>
           </div>
         </section>
 
         {/* Signal Blocks */}
-        <section id="signal-blocks" className="px-grid-margin py-12 md:py-16">
+        <section id="signal-blocks" className="px-grid-margin min-h-[100dvh] py-16 md:py-24 w-full flex flex-col justify-center">
           <div className="flow-soft relative overflow-hidden rounded-[40px] border border-outline-variant/20 bg-white p-8 md:p-12 shadow-[0_24px_80px_rgba(3,36,22,0.05)]">
             <div className="ambient-grid-panel absolute inset-0"></div>
-            <div className="relative grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
+            <div className="relative grid grid-cols-1 gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
               <div className="space-y-5">
                 <p className="font-label-caps text-label-caps text-accent-green uppercase">Built for modern operators</p>
                 <h2 className="gsap-title font-headline-xl text-headline-xl max-md:text-headline-lg leading-tight text-text-main">A launchpad for carbon-aware product teams.</h2>
@@ -645,7 +759,7 @@ export default function Home() {
         </section>
 
         {/* Feature Grid */}
-        <section id="features" className="px-grid-margin py-12 md:py-16 max-w-container-max mx-auto">
+        <section id="features" className="px-grid-margin max-w-container-max mx-auto min-h-[100dvh] py-16 md:py-24 w-full flex flex-col justify-center">
           <div className="text-center space-y-4 mb-12">
             <p className="font-label-caps text-label-caps text-accent-green uppercase">Platform Features</p>
             <h2 className="gsap-title font-headline-xl text-headline-xl">Engineered for absolute accuracy</h2>
@@ -676,19 +790,19 @@ export default function Home() {
         </section>
 
         {/* Ecosystem */}
-        <section id="architecture" className="bg-background text-text-main py-4 md:py-6 overflow-hidden">
+        <section id="architecture" className="bg-background text-text-main min-h-[100dvh] py-16 md:py-24 w-full flex flex-col justify-center">
           <EcosystemShowcase />
         </section>
 
         <StackedSteps />
         {/* Code Section */}
-        <section id="developers" className="px-grid-margin py-12 md:py-16 max-w-container-max mx-auto">
-          <div className="bg-surface-container-low rounded-[48px] p-8 md:p-16 border border-outline-variant/10 grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
+        <section id="developers" className="px-grid-margin max-w-container-max mx-auto min-h-[100dvh] py-16 md:py-24 w-full flex flex-col justify-center">
+          <div className="bg-surface-container-low rounded-[32px] sm:rounded-[48px] p-6 sm:p-8 md:p-16 border border-outline-variant/10 grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10 items-center">
             <div className="order-2 lg:order-1 relative group">
               {/* Ambient Glow Blob */}
               <div className="absolute -inset-3 bg-gradient-to-r from-accent-green/20 to-teal-500/20 rounded-3xl blur-2xl opacity-75 group-hover:opacity-100 transition duration-700 pointer-events-none"></div>
               
-              <div className="code-panel bg-[#0b1410] rounded-2xl p-6 font-mono text-[14px] text-on-primary shadow-2xl overflow-hidden relative border border-white/5 select-none transform-gpu">
+              <div className="code-panel bg-[#0b1410] rounded-2xl p-4 sm:p-6 font-mono text-[12px] sm:text-[14px] text-on-primary shadow-2xl overflow-x-auto relative border border-white/5 select-none transform-gpu">
                 <div className="flex gap-1.5 mb-6">
                   <div className="w-3 h-3 rounded-full bg-red-400"></div>
                   <div className="w-3 h-3 rounded-full bg-yellow-400"></div>
@@ -725,85 +839,9 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Pricing Section */}
-        <section id="pricing" className="px-grid-margin py-12 md:py-16 max-w-container-max mx-auto">
-          <div className="text-center space-y-4 mb-12">
-            <p className="font-label-caps text-label-caps text-accent-green uppercase">Flexible Plans</p>
-            <h2 className="gsap-title font-headline-xl text-headline-xl">Sized for your operations</h2>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {/* Starter Plan */}
-            <div className="pricing-card bg-white p-10 rounded-3xl border border-outline-variant/10 shadow-sm flex flex-col justify-between transition-all duration-400">
-              <div>
-                <h3 className="font-headline-lg text-[24px] mb-2">Developer</h3>
-                <p className="font-body-md text-text-muted mb-6">Perfect for staging & small team experiments.</p>
-                <p className="font-stat-display text-stat-display text-primary mb-6">$0 <span className="text-[16px] font-normal text-text-muted">/ month</span></p>
-                <ul className="space-y-4 mb-8 text-body-md text-text-main">
-                  <li className="flex items-center gap-2.5">
-                    <span className="material-symbols-outlined text-[18px] text-accent-green">check</span> Up to 5 projects
-                  </li>
-                  <li className="flex items-center gap-2.5">
-                    <span className="material-symbols-outlined text-[18px] text-accent-green">check</span> 5,000 API requests/mo
-                  </li>
-                  <li className="flex items-center gap-2.5">
-                    <span className="material-symbols-outlined text-[18px] text-accent-green">check</span> Community support
-                  </li>
-                </ul>
-              </div>
-              <AnimatedButton variant="secondary" className="w-full py-3 rounded-full">Get Started</AnimatedButton>
-            </div>
-            {/* Growth Plan */}
-            <div className="pricing-card section-card group bg-white p-10 rounded-3xl border-2 border-accent-green shadow-md flex flex-col justify-between relative transition-all duration-400">
-              <div className="absolute top-0 right-8 -translate-y-1/2 bg-accent-green text-white px-4 py-1 rounded-full text-xs font-bold font-label-caps tracking-wider">Popular</div>
-              <div>
-                <h3 className="font-headline-lg text-[24px] mb-2">Growth</h3>
-                <p className="font-body-md text-text-muted mb-6">For scaling engineering organizations.</p>
-                <p className="font-stat-display text-stat-display text-primary mb-6">$499 <span className="text-[16px] font-normal text-text-muted">/ month</span></p>
-                <ul className="space-y-4 mb-8 text-body-md text-text-main">
-                  <li className="flex items-center gap-2.5">
-                    <span className="material-symbols-outlined text-[18px] text-accent-green">check</span> Unlimited projects
-                  </li>
-                  <li className="flex items-center gap-2.5">
-                    <span className="material-symbols-outlined text-[18px] text-accent-green">check</span> Real-time compliance reporting
-                  </li>
-                  <li className="flex items-center gap-2.5">
-                    <span className="material-symbols-outlined text-[18px] text-accent-green">check</span> 100,000 API requests/mo
-                  </li>
-                  <li className="flex items-center gap-2.5">
-                    <span className="material-symbols-outlined text-[18px] text-accent-green">check</span> 24/7 Email & Slack support
-                  </li>
-                </ul>
-              </div>
-              <AnimatedButton variant="solid" className="w-full py-3 rounded-full">Start Free Trial</AnimatedButton>
-            </div>
-            {/* Enterprise Plan */}
-            <div className="pricing-card bg-white p-10 rounded-3xl border border-outline-variant/10 shadow-sm flex flex-col justify-between transition-all duration-400">
-              <div>
-                <h3 className="font-headline-lg text-[24px] mb-2">Enterprise</h3>
-                <p className="font-body-md text-text-muted mb-6">Custom architecture for global supply chains.</p>
-                <p className="font-stat-display text-stat-display text-primary mb-6">Custom</p>
-                <ul className="space-y-4 mb-8 text-body-md text-text-main">
-                  <li className="flex items-center gap-2.5">
-                    <span className="material-symbols-outlined text-[18px] text-accent-green">check</span> Dedicated compliance officer
-                  </li>
-                  <li className="flex items-center gap-2.5">
-                    <span className="material-symbols-outlined text-[18px] text-accent-green">check</span> Unlimited API volume
-                  </li>
-                  <li className="flex items-center gap-2.5">
-                    <span className="material-symbols-outlined text-[18px] text-accent-green">check</span> Custom integrations & SLA
-                  </li>
-                  <li className="flex items-center gap-2.5">
-                    <span className="material-symbols-outlined text-[18px] text-accent-green">check</span> Zero-carbon consulting included
-                  </li>
-                </ul>
-              </div>
-              <AnimatedButton variant="secondary" className="w-full py-3 rounded-full" onClick={(e) => handleNavClick(e, '#contact')}>Contact Sales</AnimatedButton>
-            </div>
-          </div>
-        </section>
 
         {/* FAQ */}
-        <section id="faq" className="px-grid-margin py-12 md:py-16 max-w-4xl mx-auto">
+        <section id="faq" className="px-grid-margin max-w-4xl mx-auto py-24 md:py-32 w-full flex flex-col justify-center">
           <FaqAccordion 
             title="Frequently asked questions"
             items={[
@@ -824,20 +862,28 @@ export default function Home() {
         </section>
 
         {/* Final CTA */}
-        <section id="contact" className="px-grid-margin py-12 md:py-16">
-          <div className="cta-shell bg-primary text-on-primary rounded-[48px] p-12 md:p-24 text-center relative overflow-hidden">
+        <section id="contact" className="px-4 sm:px-grid-margin min-h-[100dvh] py-16 md:py-24 w-full flex flex-col justify-center">
+          <div className="cta-shell bg-primary text-on-primary rounded-[32px] sm:rounded-[48px] p-8 sm:p-12 md:p-20 text-center relative overflow-hidden">
             <div className="absolute inset-0 opacity-20">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img alt="" className="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBePr2E7EDaeuOTgkBstVxeaD7kEbSc3jTtQo8MtS06eSACutQ8BleHLS3U144QmfxR9iiz6gZpVrrmqFHekjyzAVw6OuzvtjncyRhYNSx2SLRUMZBMk-pPZn4BnHNE__wf9012x0xTHs0FE2TScdd35OCDIGLdW26GKfutb1vwJJ_WbAh8iKwX7VzVJx7nL9ple2U0I-ltJS47FS4woYcmLIe6-06EajLMSYm4BD-EmmLxeiKLWrg" />
+              <Image 
+                alt="ZeroCarbon Intelligence Background" 
+                loading="lazy" 
+                decoding="async" 
+                className="w-full h-full object-cover" 
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuBePr2E7EDaeuOTgkBstVxeaD7kEbSc3jTtQo8MtS06eSACutQ8BleHLS3U144QmfxR9iiz6gZpVrrmqFHekjyzAVw6OuzvtjncyRhYNSx2SLRUMZBMk-pPZn4BnHNE__wf9012x0xTHs0FE2TScdd35OCDIGLdW26GKfutb1vwJJ_WbAh8iKwX7VzVJx7nL9ple2U0I-ltJS47FS4woYcmLIe6-06EajLMSYm4BD-EmmLxeiKLWrg"
+                fill
+                sizes="100vw"
+              />
             </div>
-            <div className="relative z-10 max-w-3xl mx-auto space-y-12">
-              <h2 className="gsap-title font-display-lg text-display-lg max-md:text-headline-xl">Bring carbon intelligence back into your workflow.</h2>
+            <div className="relative z-10 max-w-3xl mx-auto space-y-8 sm:space-y-12">
+              <h2 className="gsap-title font-display-lg text-2xl sm:text-display-lg max-md:text-headline-xl">Bring carbon intelligence back into your workflow.</h2>
               <p className="font-body-xl text-body-xl opacity-80">Join 200+ sustainable engineering teams reducing their compliance load by 60%.</p>
-              <div className="flex flex-wrap justify-center gap-4">
-                <AnimatedButton variant="secondary" className="px-12 py-6 rounded-full font-body-md text-body-md shadow-2xl" onClick={(e) => handleNavClick(e, '#contact')}>
+              <div className="flex flex-col sm:flex-row flex-wrap justify-center gap-3 sm:gap-4">
+                <AnimatedButton as={Link} href="/request-demo" variant="secondary" className="px-8 sm:px-12 py-4 sm:py-6 rounded-full font-body-md text-body-md shadow-2xl">
                   Request Demo
                 </AnimatedButton>
-                <AnimatedButton variant="outline" className="border-white/30 text-white hover:bg-white/10 px-12 py-6 rounded-full font-body-md text-body-md [--shine:rgba(255,255,255,0.4)]">
+                <AnimatedButton as={Link} href="/docs" variant="outline" className="border-white/30 text-white hover:bg-white/10 px-8 sm:px-12 py-4 sm:py-6 rounded-full font-body-md text-body-md [--shine:rgba(255,255,255,0.4)]">
                   Read Documentation
                 </AnimatedButton>
               </div>
@@ -855,37 +901,36 @@ export default function Home() {
           <div>
             <p className="font-label-caps text-primary mb-6">Product</p>
             <ul className="space-y-4">
-              <li><a className="text-body-md text-text-muted hover:text-primary transition-colors cursor-pointer" onClick={(e) => handleNavClick(e, '#features')}>Solutions</a></li>
-              <li><a className="text-body-md text-text-muted hover:text-primary transition-colors cursor-pointer" onClick={(e) => handleNavClick(e, '#architecture')}>Architecture</a></li>
-              <li><a className="text-body-md text-text-muted hover:text-primary transition-colors cursor-pointer" onClick={(e) => handleNavClick(e, '#pricing')}>Pricing</a></li>
+              <li><Link href="/#features" className="text-body-md text-text-muted hover:text-primary transition-colors cursor-pointer" onClick={(e) => handleNavClick(e, '#features')}>Solutions</Link></li>
+              <li><Link href="/#architecture" className="text-body-md text-text-muted hover:text-primary transition-colors cursor-pointer" onClick={(e) => handleNavClick(e, '#architecture')}>Architecture</Link></li>
             </ul>
           </div>
           <div>
             <p className="font-label-caps text-primary mb-6">Resources</p>
             <ul className="space-y-4">
-              <li><a className="text-body-md text-text-muted hover:text-primary transition-colors" href="#">Documentation</a></li>
-              <li><a className="text-body-md text-text-muted hover:text-primary transition-colors" href="#">API Reference</a></li>
-              <li><a className="text-body-md text-text-muted hover:text-primary transition-colors" href="#">Case Studies</a></li>
+              <li><Link className="text-body-md text-text-muted hover:text-primary transition-colors" href="/docs">Documentation</Link></li>
+              <li><Link className="text-body-md text-text-muted hover:text-primary transition-colors" href="/docs#authentication">API Reference</Link></li>
+              <li><Link className="text-body-md text-text-muted hover:text-primary transition-colors" href="/#features">Case Studies</Link></li>
             </ul>
           </div>
           <div>
             <p className="font-label-caps text-primary mb-6">Legal</p>
             <ul className="space-y-4">
-              <li><a className="text-body-md text-text-muted hover:text-primary transition-colors" href="#">Privacy Policy</a></li>
-              <li><a className="text-body-md text-text-muted hover:text-primary transition-colors" href="#">Terms of Service</a></li>
-              <li><a className="text-body-md text-text-muted hover:text-primary transition-colors cursor-pointer" onClick={(e) => handleNavClick(e, '#faq')}>FAQ</a></li>
+              <li><a className="text-body-md text-text-muted hover:text-primary transition-colors" href="mailto:support@zerocarbon.org.in">Privacy Policy</a></li>
+              <li><a className="text-body-md text-text-muted hover:text-primary transition-colors" href="mailto:support@zerocarbon.org.in">Terms of Service</a></li>
+              <li><Link className="text-body-md text-text-muted hover:text-primary transition-colors cursor-pointer" href="/#faq" onClick={(e) => handleNavClick(e, '#faq')}>FAQ</Link></li>
             </ul>
           </div>
         </div>
-        <div className="max-w-container-max mx-auto mt-20 pt-10 border-t border-outline-variant/30 flex justify-between items-center text-body-md text-text-muted">
-          <p>© 2024 ZeroCarbon MCP. All rights reserved.</p>
+        <div className="max-w-container-max mx-auto mt-20 pt-10 border-t border-outline-variant/30 flex flex-col sm:flex-row justify-between items-center gap-4 text-body-md text-text-muted">
+          <p className="text-center sm:text-left">© 2026 ZeroCarbon MCP. All rights reserved.</p>
           <div className="flex gap-6">
-            <a href="#" aria-label="ZeroCarbon MCP Public Portal" className="hover:text-primary transition-colors">
+            <Link href="/" aria-label="ZeroCarbon MCP Public Portal" className="hover:text-primary transition-colors">
               <span className="material-symbols-outlined" aria-hidden="true">public</span>
-            </a>
-            <a href="#" aria-label="ZeroCarbon MCP Terminal Console" className="hover:text-primary transition-colors">
+            </Link>
+            <Link href="/docs" aria-label="ZeroCarbon MCP Terminal Console" className="hover:text-primary transition-colors">
               <span className="material-symbols-outlined" aria-hidden="true">terminal</span>
-            </a>
+            </Link>
           </div>
         </div>
       </footer>
@@ -929,6 +974,410 @@ export default function Home() {
           })
         }}
       />
+      {/* MCP Connect Modal */}
+      <AnimatePresence>
+        {isMcpModalOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsMcpModalOpen(false)}
+              className="absolute inset-0 bg-[#0B0F0D]/60 backdrop-blur-md"
+            />
+            
+            {/* Modal Body */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 10 }}
+              transition={{ type: "spring", duration: 0.4 }}
+              className="relative w-full max-w-[95vw] sm:max-w-2xl md:max-w-4xl h-[90vh] sm:h-[650px] max-h-[90vh] sm:max-h-[85vh] bg-surface border border-outline-variant/40 rounded-2xl sm:rounded-3xl shadow-[0_32px_90px_rgba(0,0,0,0.15)] flex flex-col overflow-hidden z-10"
+            >
+              {/* Header */}
+              <div className="flex items-center justify-between p-4 sm:p-6 border-b border-outline-variant/40 shrink-0">
+                <div className="flex items-center gap-3">
+                  <div className="h-9 w-9 sm:h-10 sm:w-10 rounded-full bg-badge-bg flex items-center justify-center shrink-0">
+                    <span className="material-symbols-outlined text-accent-green-text text-[20px] sm:text-[22px]">
+                      monitoring
+                    </span>
+                  </div>
+                  <div>
+                    <h3 className="font-display-md text-sm sm:text-base font-bold text-text-main flex items-center gap-2">
+                      Connect AI Agent (MCP)
+                    </h3>
+                    <p className="hidden sm:block text-[10px] text-text-muted mt-0.5 tracking-wider uppercase font-bold">
+                      INTEGRATE CURSOR, CLAUDE, OR GEMINI CLI FOR LOCAL DEVELOPMENT
+                    </p>
+                  </div>
+                </div>
+                
+                <button
+                  onClick={() => setIsMcpModalOpen(false)}
+                  className="p-1.5 rounded-full hover:bg-code-inline-bg text-text-muted hover:text-text-main transition-colors cursor-pointer"
+                >
+                  <span className="material-symbols-outlined text-lg">close</span>
+                </button>
+              </div>
+
+              {/* Scrollable Container */}
+              <div className="flex-1 overflow-y-auto p-8 space-y-6">
+                {/* Step 1 Card */}
+                <div className="bg-step-bg border border-accent-green-text/15 p-5 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                  <div className="space-y-1">
+                    <h4 className="text-xs font-bold text-text-main flex items-center gap-2">
+                      Step 1: Download MCP Bridge Client Script
+                      <span className="px-2 py-0.5 text-[9px] font-bold rounded bg-badge-bg text-accent-green-text border border-accent-green-text/10">
+                        REQUIRED
+                      </span>
+                    </h4>
+                    <p className="text-xs text-text-muted leading-relaxed">
+                      Download <code className="font-mono text-accent-green-text font-bold">zerocarbon-mcp-client.js</code> and save it to a folder on your computer (e.g., <code className="font-mono bg-code-inline-bg px-1 py-0.5 rounded text-code-inline-text font-semibold">C:\mcp\zerocarbon-mcp-client.js</code> or <code className="font-mono bg-code-inline-bg px-1 py-0.5 rounded text-code-inline-text font-semibold">~/mcp/zerocarbon-mcp-client.js</code>).
+                    </p>
+                  </div>
+                  <a
+                    href="/zerocarbon-mcp-client.js"
+                    download="zerocarbon-mcp-client.js"
+                    className="bg-[#00875A] hover:bg-[#006C48] text-white px-5 py-3 rounded-xl font-bold text-xs flex items-center gap-2 transition-all shadow-sm shrink-0 cursor-pointer"
+                  >
+                    <span className="material-symbols-outlined text-base">download</span>
+                    Download Script (.js)
+                  </a>
+                </div>
+
+                {/* 4 Steps Instructions */}
+                <div className="border border-outline-variant/40 p-5 rounded-2xl space-y-3 bg-instructions-bg">
+                  <h4 className="text-xs font-bold text-text-main flex items-center gap-1.5">
+                    <span className="material-symbols-outlined text-[16px] text-accent-green-text">
+                      assignment
+                    </span>
+                    How to Connect Your AI Agent (4 Steps):
+                  </h4>
+                  <ol className="list-decimal list-inside text-xs text-text-muted space-y-2 leading-relaxed pl-1">
+                    <li>
+                      <span className="font-bold text-text-main pl-1">Download:</span> Click the button above to download <code className="font-mono text-accent-green-text font-bold">zerocarbon-mcp-client.js</code> to your local machine.
+                    </li>
+                    <li>
+                      <span className="font-bold text-text-main pl-1">Node.js Requirement:</span> Ensure Node.js (v18+) is installed on your machine (<code className="font-mono bg-code-inline-bg px-1 rounded text-code-inline-text">node -v</code>).
+                    </li>
+                    <li>
+                      <span className="font-bold text-text-main pl-1">Select AI Editor below:</span> Choose your platform tab below (Claude Desktop, Cursor, Claude Code, Gemini CLI) and copy the configuration.
+                    </li>
+                    <li>
+                      <span className="font-bold text-text-main pl-1">Set File Path:</span> In your AI editor configuration, replace <code className="font-mono text-accent-green-text font-bold">/path/to/zerocarbon-mcp-client.js</code> with the actual file path where you saved the downloaded script.
+                    </li>
+                  </ol>
+                </div>
+
+                {/* Horizontal Tab bar */}
+                <div className="flex items-center gap-1 border-b border-outline-variant/40 pb-2 overflow-x-auto select-none scrollbar-none -mx-1 px-1">
+                  {[
+                    { id: "claude", label: "CLAUDE" },
+                    { id: "cursor", label: "CURSOR" },
+                    { id: "claude-code", label: "CODE CLI" },
+                    { id: "gemini", label: "GEMINI" },
+                    { id: "api", label: "cURL" },
+                    { id: "ai-guide", label: "AI GUIDE" },
+                  ].map((tab) => {
+                    const isActive = activeMcpTab === tab.id;
+                    return (
+                      <button
+                        key={tab.id}
+                        onClick={() => setActiveMcpTab(tab.id)}
+                        className={`px-3 sm:px-5 py-2 sm:py-2.5 rounded-full text-[10px] sm:text-xs font-bold transition-all duration-200 cursor-pointer shrink-0 border ${
+                          isActive
+                            ? "bg-instructions-bg border-outline-variant/40 text-text-main shadow-sm"
+                            : "bg-transparent border-transparent text-text-muted hover:text-text-main"
+                        }`}
+                      >
+                        {tab.label}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* Tab content */}
+                <div className="space-y-4">
+                  {activeMcpTab === "claude" && (
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <p className="text-xs font-bold text-text-main">
+                          1. Locate Claude Desktop config file:
+                        </p>
+                        <ul className="list-disc list-inside text-xs text-text-muted space-y-1.5 pl-1 leading-relaxed">
+                          <li>
+                            Windows: <code className="font-mono bg-code-inline-bg px-1.5 py-0.5 rounded text-code-inline-text">%APPDATA%\Claude\claude_desktop_config.json</code>
+                          </li>
+                          <li>
+                            macOS: <code className="font-mono bg-code-inline-bg px-1.5 py-0.5 rounded text-code-inline-text">~/Library/Application Support/Claude/claude_desktop_config.json</code>
+                          </li>
+                        </ul>
+                      </div>
+
+                      <div className="space-y-2">
+                        <p className="text-xs font-bold text-text-main">
+                          2. Paste this configuration into the file:
+                        </p>
+                        <div className="relative group">
+                          <pre className="text-xs font-mono p-4 bg-[#0A0E0C] text-zinc-100 border border-neutral-800 rounded-xl overflow-x-auto leading-relaxed select-all">
+{`{
+  `}<span className="text-teal-400">"mcpServers"</span>{`: {
+    `}<span className="text-teal-400">"zerocarbon-mcp"</span>{`: {
+      `}<span className="text-teal-400">"command"</span>{`: `}<span className="text-amber-200">"node"</span>{`,
+      `}<span className="text-teal-400">"args"</span>{`: [
+        `}<span className="text-amber-200">"/path/to/zerocarbon-mcp-client.js"</span>{`
+      ],
+      `}<span className="text-teal-400">"env"</span>{`: {
+        `}<span className="text-teal-400">"ZEROCARBON_API_KEY"</span>{`: `}<span className="text-amber-200">"zc_test_f079482xxxxxxxxxxxxxxxxxxxxxxxx"</span>{`,
+        `}<span className="text-teal-400">"ZEROCARBON_API_URL"</span>{`: `}<span className="text-amber-200">"https://zerocarbon-mcp.onrender.com/api/v1/mcp"</span>{`
+      }
+    }
+  }
+}`}
+                          </pre>
+                          <button
+                            onClick={() => handleCopy(`{\n  "mcpServers": {\n    "zerocarbon-mcp": {\n      "command": "node",\n      "args": [\n        "/path/to/zerocarbon-mcp-client.js"\n      ],\n      "env": {\n        "ZEROCARBON_API_KEY": "zc_test_f079482xxxxxxxxxxxxxxxxxxxxxxxx",\n        "ZEROCARBON_API_URL": "https://zerocarbon-mcp.onrender.com/api/v1/mcp"\n      }\n    }\n  }\n}`, "claude-json")}
+                            className="absolute top-3 right-3 p-1.5 rounded-lg border border-neutral-700 bg-[#161F1A] hover:bg-[#1E2B24] text-zinc-400 hover:text-zinc-200 transition-colors cursor-pointer shrink-0"
+                          >
+                            <span className="material-symbols-outlined text-[16px]">
+                              {copiedText === "claude-json" ? "done" : "content_copy"}
+                            </span>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {activeMcpTab === "cursor" && (
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <p className="text-xs font-bold text-text-main">
+                          1. Open Cursor Settings:
+                        </p>
+                        <p className="text-xs text-text-muted">
+                          Navigate to <span className="font-semibold text-text-main">Settings &rarr; Features &rarr; MCP</span> and click <span className="font-semibold text-text-main">+ Add New MCP Server</span>.
+                        </p>
+                      </div>
+
+                      <div className="grid gap-3">
+                        {[
+                          { label: "SERVER NAME", value: "ZeroCarbon", id: "cursor-name" },
+                          { label: "TYPE", value: "command", id: "cursor-type", noCopy: true },
+                          { label: "COMMAND", value: "node", id: "cursor-cmd" },
+                          { label: "ARGUMENTS (JSON STRING)", value: "/path/to/zerocarbon-mcp-client.js", id: "cursor-args" },
+                          { label: "ENVIRONMENT VARIABLES (ENV)", value: "ZEROCARBON_API_KEY = zc_2a982b2b0xxxxxxxxxxxxxxxxxxxxxxxx ZEROCARBON_API_URL = https://zerocarbon-mcp.onrender.com/api/v1/mcp", id: "cursor-env" },
+                        ].map((field) => (
+                          <div key={field.label} className="p-4 bg-instructions-bg border border-outline-variant/30 rounded-xl flex items-center justify-between gap-4">
+                            <div className="space-y-1 min-w-0 flex-1">
+                              <p className="text-[10px] font-bold text-text-muted tracking-wider">
+                                {field.label}
+                              </p>
+                              <p className="font-mono text-xs font-bold text-text-main break-all select-all leading-normal">
+                                {field.value === "ZEROCARBON_API_KEY = zc_2a982b2b0xxxxxxxxxxxxxxxxxxxxxxxx ZEROCARBON_API_URL = https://zerocarbon-mcp.onrender.com/api/v1/mcp" ? (
+                                  <>
+                                    <span className="text-teal-600 dark:text-teal-400 font-bold">ZEROCARBON_API_KEY</span>=<span className="text-amber-700 dark:text-amber-200">"zc_2a982b2b0xxxxxxxxxxxxxxxxxxxxxxxx"</span>
+                                    <br />
+                                    <span className="text-teal-600 dark:text-teal-400 font-bold">ZEROCARBON_API_URL</span>=<span className="text-amber-700 dark:text-amber-200">"https://zerocarbon-mcp.onrender.com/api/v1/mcp"</span>
+                                  </>
+                                ) : field.value}
+                              </p>
+                            </div>
+                            {!field.noCopy && (
+                              <button
+                                onClick={() => handleCopy(field.value, field.id)}
+                                className="p-1.5 rounded-lg border border-outline-variant/40 bg-surface hover:bg-instructions-bg transition-colors cursor-pointer shrink-0"
+                              >
+                                <span className="material-symbols-outlined text-[16px] text-neutral-500">
+                                  {copiedText === field.id ? "done" : "content_copy"}
+                                </span>
+                              </button>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {activeMcpTab === "claude-code" && (
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <p className="text-xs font-bold text-text-main">
+                          Install via Claude CLI:
+                        </p>
+                        <p className="text-xs text-text-muted">
+                          Run the following command directly inside your terminal window to bind ZeroCarbon:
+                        </p>
+                        <div className="relative group">
+                          <pre className="text-xs font-mono p-4 bg-[#0A0E0C] text-zinc-100 border border-neutral-800 rounded-xl overflow-x-auto whitespace-pre-wrap break-all pr-12 leading-relaxed select-all">
+                            <span className="text-emerald-400">claude mcp add</span> zerocarbon node <span className="text-amber-200">/path/to/zerocarbon-mcp-client.js</span> --env <span className="text-teal-300">ZEROCARBON_API_KEY</span>=zc_2a982b2b0xxxxxxxxxxxxxxxxxxxxxxxx <span className="text-teal-300">ZEROCARBON_API_URL</span>=https://zerocarbon-mcp.onrender.com/api/v1/mcp
+                          </pre>
+                          <button
+                            onClick={() => handleCopy(`claude mcp add zerocarbon node /path/to/zerocarbon-mcp-client.js --env ZEROCARBON_API_KEY=zc_2a982b2b0xxxxxxxxxxxxxxxxxxxxxxxx ZEROCARBON_API_URL=https://zerocarbon-mcp.onrender.com/api/v1/mcp`, "claude-code-cli")}
+                            className="absolute top-3 right-3 p-1.5 rounded-lg border border-neutral-700 bg-[#161F1A] hover:bg-[#1E2B24] text-zinc-400 hover:text-zinc-200 transition-colors cursor-pointer"
+                          >
+                            <span className="material-symbols-outlined text-[16px]">
+                              {copiedText === "claude-code-cli" ? "done" : "content_copy"}
+                            </span>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {activeMcpTab === "gemini" && (
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <p className="text-xs font-bold text-text-main">
+                          Launch with Local Environment Settings:
+                        </p>
+                        <p className="text-xs text-text-muted">
+                          Execute the command line below directly in your CLI tool terminal (e.g. Gemini Code Assist CLI, mcp-cli):
+                        </p>
+                        <div className="relative group">
+                          <pre className="text-xs font-mono p-4 bg-[#0A0E0C] text-zinc-100 border border-neutral-800 rounded-xl overflow-x-auto leading-relaxed select-all">
+                            <span className="text-zinc-500 italic font-semibold"># Windows Powershell</span>{`
+`}<span className="text-teal-300">$env:ZEROCARBON_API_KEY</span>{`=`}<span className="text-amber-200">"zc_2a982b2b0xxxxxxxxxxxxxxxxxxxxxxxx"</span>{`; `}<span className="text-teal-300">$env:ZEROCARBON_API_URL</span>{`=`}<span className="text-amber-200">"https://zerocarbon-mcp.onrender.com/api/v1/mcp"</span>{`
+
+`}<span className="text-zinc-500 italic font-semibold"># macOS / Linux</span>{`
+`}<span className="text-emerald-400 font-semibold">export</span>{` `}<span className="text-teal-300">ZEROCARBON_API_KEY</span>{`=`}<span className="text-amber-200">"zc_2a982b2b0xxxxxxxxxxxxxxxxxxxxxxxx"</span>{`
+`}<span className="text-emerald-400 font-semibold">export</span>{` `}<span className="text-teal-300">ZEROCARBON_API_URL</span>{`=`}<span className="text-amber-200">"https://zerocarbon-mcp.onrender.com/api/v1/mcp"</span>{`
+`}<span className="text-emerald-400 font-semibold">node</span>{` /path/to/zerocarbon-mcp-client.js`}
+                          </pre>
+                          <button
+                            onClick={() => handleCopy(`$env:ZEROCARBON_API_KEY="zc_2a982b2b0xxxxxxxxxxxxxxxxxxxxxxxx"; $env:ZEROCARBON_API_URL="https://zerocarbon-mcp.onrender.com/api/v1/mcp"\n\nexport ZEROCARBON_API_KEY="zc_2a982b2b0xxxxxxxxxxxxxxxxxxxxxxxx"\nexport ZEROCARBON_API_URL="https://zerocarbon-mcp.onrender.com/api/v1/mcp"\nnode /path/to/zerocarbon-mcp-client.js`, "gemini-cli")}
+                            className="absolute top-3 right-3 p-1.5 rounded-lg border border-neutral-700 bg-[#161F1A] hover:bg-[#1E2B24] text-zinc-400 hover:text-zinc-200 transition-colors cursor-pointer"
+                          >
+                            <span className="material-symbols-outlined text-[16px]">
+                              {copiedText === "gemini-cli" ? "done" : "content_copy"}
+                            </span>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {activeMcpTab === "api" && (
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <p className="text-xs font-bold text-text-main">
+                          List Available Tools (cURL):
+                        </p>
+                        <p className="text-xs text-text-muted">
+                          Execute tools manually using JSON-RPC requests via HTTP POST:
+                        </p>
+                        <div className="relative group">
+                          <pre className="text-xs font-mono p-4 bg-[#0A0E0C] text-zinc-100 border border-neutral-800 rounded-xl overflow-x-auto leading-relaxed select-all">
+                            <span className="text-emerald-400 font-semibold">curl</span> -X POST \{`
+  `}-H <span className="text-amber-200">"Content-Type: application/json"</span> \{`
+  `}-H <span className="text-amber-200">"Authorization: Bearer zc_2a982b2b0xxxxxxxxxxxxxxxxxxxxxxxx"</span> \{`
+  `}-d <span className="text-emerald-400 font-semibold">{"'{"}</span><span className="text-teal-300">"jsonrpc"</span>: <span className="text-amber-200">"2.0"</span>, <span className="text-teal-300">"id"</span>: 1, <span className="text-teal-300">"method"</span>: <span className="text-amber-200">"tools/list"</span><span className="text-emerald-400 font-semibold">{"}'"}</span> \{`
+  `}<span className="text-amber-200">https://zerocarbon-mcp.onrender.com/api/v1/mcp</span>
+                          </pre>
+                          <button
+                            onClick={() => handleCopy(`curl -X POST \\\n  -H "Content-Type: application/json" \\\n  -H "Authorization: Bearer zc_2a982b2b0xxxxxxxxxxxxxxxxxxxxxxxx" \\\n  -d '{"jsonrpc": "2.0", "id": 1, "method": "tools/list"}' \\\n  https://zerocarbon-mcp.onrender.com/api/v1/mcp`, "api-curl")}
+                            className="absolute top-3 right-3 p-1.5 rounded-lg border border-neutral-700 bg-[#161F1A] hover:bg-[#1E2B24] text-zinc-400 hover:text-zinc-200 transition-colors cursor-pointer"
+                          >
+                            <span className="material-symbols-outlined text-[16px]">
+                              {copiedText === "api-curl" ? "done" : "content_copy"}
+                            </span>
+                          </button>
+                        </div>
+                      </div>
+
+                      <div className="space-y-2 mt-4 pt-4 border-t border-outline-variant/20">
+                        <p className="text-xs font-bold text-text-main flex items-center gap-1.5">
+                          <span className="material-symbols-outlined text-[16px] text-accent-green-text">
+                            chat_bubble
+                          </span>
+                          TEST DISCOVERY PROMPT:
+                        </p>
+                        <div className="flex items-start gap-2 p-3 bg-badge-bg/40 border border-accent-green-text/10 rounded-xl">
+                          <p className="text-xs text-text-muted italic flex-1 leading-relaxed">
+                            "Describe what tools you offer from ZeroCarbon and list my latest audit records summary."
+                          </p>
+                          <button
+                            onClick={() => handleCopy("Describe what tools you offer from ZeroCarbon and list my latest audit records summary.", "api-prompt")}
+                            className="p-1.5 rounded-lg border border-outline-variant/40 bg-surface hover:bg-badge-bg/40 transition-colors cursor-pointer shrink-0"
+                          >
+                            <span className="material-symbols-outlined text-[16px] text-accent-green-text">
+                              {copiedText === "api-prompt" ? "done" : "content_copy"}
+                            </span>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {activeMcpTab === "ai-guide" && (
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <p className="text-xs font-bold text-text-main">
+                          ZeroCarbon Architecture Context (AI Guide)
+                        </p>
+                        <p className="text-xs text-text-muted leading-relaxed">
+                          Provide this guide to your AI Agent (Cursor, Claude Desktop, Gemini) to immediately align it on your database models, MCP operations, stack, and idempotency protection.
+                        </p>
+                      </div>
+
+                      <div className="flex flex-wrap gap-2.5">
+                        <a
+                          href="/zerocarbon-ai-guide.md"
+                          download="zerocarbon-ai-guide.md"
+                          className="bg-[#00875A] hover:bg-[#006C48] text-white px-4 py-2 rounded-xl font-bold text-xs flex items-center gap-2 transition-all shadow-sm cursor-pointer"
+                        >
+                          <span className="material-symbols-outlined text-base">download</span>
+                          Download AI_GUIDE.md
+                        </a>
+                        <button
+                          onClick={() => handleCopy(
+                            `# ZeroCarbon Core Stack\n- Framework: Next.js 15.5.12\n- Database: PostgreSQL (Neon + Prisma ORM)\n- Payments: Dodo Payments (MoR)\n- AI/LLM: Gemini 2.5\n- Vector: pgvector`,
+                            "modal-ai-guide-snippet"
+                          )}
+                          className="border border-outline-variant/40 bg-surface hover:bg-instructions-bg text-text-main px-4 py-2 rounded-xl font-bold text-xs flex items-center gap-2 transition-all cursor-pointer"
+                        >
+                          <span className="material-symbols-outlined text-base">
+                            {copiedText === "modal-ai-guide-snippet" ? "done" : "content_copy"}
+                          </span>
+                          Copy Context Snippet
+                        </button>
+                      </div>
+
+                      <div className="grid gap-3">
+                        <div className="p-4 bg-instructions-bg border border-outline-variant/30 rounded-xl space-y-1.5">
+                          <p className="text-[10px] font-bold text-text-muted tracking-wider">AI SYSTEM RULES</p>
+                          <p className="text-xs text-text-muted leading-relaxed">
+                            ZeroCarbon AI Reasoning Gateway runs on <code className="font-mono bg-code-inline-bg px-1 rounded text-code-inline-text">POST /api/v1/mcp</code>. It utilizes a 10-step ReAct reasoning loop, automated self-healing retry on db crashes, and concurrent tool execution.
+                          </p>
+                        </div>
+                        <div className="p-4 bg-instructions-bg border border-outline-variant/30 rounded-xl space-y-1.5">
+                          <p className="text-[10px] font-bold text-text-muted tracking-wider">IDEMPOTENCY & LEDGER</p>
+                          <p className="text-xs text-text-muted leading-relaxed">
+                            Calculations are saved into the double-entry bookkeeping Carbon Ledger. All operations use a strict SHA-256 <code className="font-mono bg-code-inline-bg px-1 rounded text-code-inline-text">idempotency_key</code> verification to block duplicate data writes.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Footer */}
+              <div className="flex items-center justify-between px-8 py-5 border-t border-outline-variant/40 shrink-0 bg-instructions-bg/40">
+                <span className="text-[10px] text-text-muted">
+                  ZeroCarbon MCP is standard-compliant & secured.
+                </span>
+                <button
+                  onClick={() => setIsMcpModalOpen(false)}
+                  className="bg-[#00875A] hover:bg-[#006C48] text-white font-bold px-6 py-2 rounded-full text-xs transition-colors shadow-sm cursor-pointer"
+                >
+                  Done
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
